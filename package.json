@@ -10,7 +10,7 @@
     "type": "module"
   },
   "prisma": {
-    "schema": "./prisma/schema.prisma"
+    "schema": "/prisma/schema.prisma"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
