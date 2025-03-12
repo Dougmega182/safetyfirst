@@ -4,14 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "docker build -t Dockerfile .",
+    "build": "docker build -t dockerfile .",
     
     "start": "next start",
     "lint": "next lint",
     "type": "module"
   },
   "prisma": {
-    "schema": "..../prisma/schema.prisma"
+    "schema": "prisma/schema.prisma"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

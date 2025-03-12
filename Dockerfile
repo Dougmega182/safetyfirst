@@ -3,16 +3,19 @@ FROM node:18-alpine AS deps
 WORKDIR /app
 RUN apk add --no-cache libc6-compat python3 make g++
 COPY package.json package-lock.json* ./
-RUN npx prisma generate 
-COPY . .RUN npm ci
+COPY . .
+RUN npx prisma generate || { echo "Prisma generate failed"; exit 1; }
+COPY . .
+RUN npm ci
 
 # Stage 2: Builder
 FROM node:18-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-ENV NEXT_TELEMETRY_DISABLED=1 NODE_ENV=production
-RUN npm run build
+ENV NODE_OPTIONS=--max-old-space-size=4096
+RUN npm run build || { echo "Build failed"; exit 1; } 
+
 
 # Stage 3: Runner
 FROM node:18-alpine AS runner
