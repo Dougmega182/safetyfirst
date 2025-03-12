@@ -1,7 +1,6 @@
-import { PrismaClient } from "@prisma/client"
-import bcrypt from "bcryptjs"
-
-const prisma = new PrismaClient()
+const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcrypt');
+const prisma = new PrismaClient();
 
 async function main() {
   // Create admin user
@@ -130,11 +129,8 @@ async function main() {
 }
 
 main()
-  .catch((e) => {
-    console.error(e)
-    process.exit(1)
-  })
-  .finally(async () => {
-    await prisma.$disconnect()
-  })
+  .catch((e) => console.error(e))
+  .finally(() => {
+    process.exit(0);
+  });
 

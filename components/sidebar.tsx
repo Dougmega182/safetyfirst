@@ -5,7 +5,7 @@ import type React from "react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { useAuth } from "@/lib/use-auth"
-import { BarChart3, ClipboardList, FileText, HardHat, LayoutDashboard, MapPin, Settings, Users } from "lucide-react"
+import { BarChart3, ClipboardList, FileText, HardHat, LayoutDashboard, MapPin, Settings, Users } from 'lucide-react'
 import {
   Sidebar,
   SidebarContent,

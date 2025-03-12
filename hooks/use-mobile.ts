@@ -1,27 +1,28 @@
 "use client"
 
-import { useState, useEffect } from "react"
+// Updated hooks/useIsMobile.js
+import { useState, useEffect } from 'react';
 
-export const useMobile = () => {
-  const [isMobile, setIsMobile] = useState(false)
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768) // Adjust breakpoint as needed
+    if (typeof window !== 'undefined') {
+      const handleResize = () => {
+        setIsMobile(window.innerWidth < 768);
+      };
+
+      handleResize(); // Initial check
+
+      window.addEventListener('resize', handleResize);
+
+      return () => {
+        window.removeEventListener('resize', handleResize);
+      };
     }
+  }, []);
 
-    // Set initial value
-    handleResize()
-
-    // Listen for window resize events
-    window.addEventListener("resize", handleResize)
-
-    // Clean up event listener on unmount
-    return () => {
-      window.removeEventListener("resize", handleResize)
-    }
-  }, [])
-
-  return isMobile
+  return isMobile;
 }
 
+export default useIsMobile;

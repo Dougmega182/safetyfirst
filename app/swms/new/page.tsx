@@ -11,9 +11,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/components/ui/use-toast"
-import { ArrowLeft, Plus, Save, Trash2 } from "lucide-react"
+import { ArrowLeft, Plus, Save, Trash2 } from 'lucide-react'
 import Link from "next/link"
-import SignatureCanvas from "@/components/signature-canvas"
+import dynamic from "next/dynamic"
+
+// Import SignatureCanvas dynamically with no SSR to avoid hydration issues
+const SignatureCanvas = dynamic(() => import("@/components/signature-canvas"), { ssr: false })
 
 export default function NewSwmsPage() {
   const { user, loading } = useAuth()
@@ -22,6 +25,11 @@ export default function NewSwmsPage() {
   const [activeTab, setActiveTab] = useState("details")
   const [hazards, setHazards] = useState([{ id: "hazard_1", description: "", controls: "", riskLevel: "medium" }])
   const [signature, setSignature] = useState<string | null>(null)
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   useEffect(() => {
     if (!loading && !user) {
@@ -234,7 +242,7 @@ export default function NewSwmsPage() {
               <div className="space-y-2">
                 <Label htmlFor="signature">Signature</Label>
                 <div className="rounded-lg border p-4">
-                  <SignatureCanvas onSave={setSignature} />
+                  {isMounted && <SignatureCanvas onSave={setSignature} />}
                 </div>
                 {signature && <p className="text-sm text-green-600">Signature captured successfully</p>}
               </div>
