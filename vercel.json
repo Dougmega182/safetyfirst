@@ -1,6 +1,5 @@
 {
     "version": 2,
-    "platforms": ["serverless"],
     "builds": [
       {
         "src": "Dockerfile",
