@@ -1,0 +1,30 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "node server.js"
+healthcheckPath = "/"
+healthcheckTimeout = 100
+
+[env]
+NODE_ENV = "production"
+
+[[services]]
+name = "web"
+envVars = [
+  { key = "DATABASE_URL", sync = false },
+  { key = "JWT_SECRET", sync = false },
+  { key = "REPORT_EMAIL", sync = false },
+  { key = "SMTP_HOST", sync = false },
+  { key = "SMTP_PORT", sync = false },
+  { key = "SMTP_SECURE", sync = false },
+  { key = "SMTP_USER", sync = false },
+  { key = "SMTP_PASSWORD", sync = false },
+  { key = "SMTP_FROM", sync = false },
+  { key = "CRON_SECRET", sync = false }
+]
+
+[[services.ports]]
+port = 3000
+
