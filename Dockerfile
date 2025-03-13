@@ -6,6 +6,7 @@ COPY package.json package-lock.json* ./
 COPY . .
 RUN npx prisma generate || { echo "Prisma generate failed"; exit 1; }
 COPY . .
+RUN npm install @stackframe/stack
 RUN npm ci
 
 # Stage 2: Builder

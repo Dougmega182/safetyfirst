@@ -1,4 +1,6 @@
 import type React from "react"
+import { StackProvider, StackTheme } from "@stackframe/stack";
+import { stackServerApp } from "../stack";
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
@@ -24,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={inter.className}><StackProvider app={stackServerApp}><StackTheme>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <AuthProvider>
             <SidebarProvider>
@@ -43,7 +45,7 @@ export default function RootLayout({
             </SidebarProvider>
           </AuthProvider>
         </ThemeProvider>
-      </body>
+      </StackTheme></StackProvider></body>
     </html>
   )
 }

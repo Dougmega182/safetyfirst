@@ -42,8 +42,9 @@ export async function POST(request: Request) {
     // Create JWT token
     const token = sign({ id: user.id }, process.env.JWT_SECRET || "fallback-secret", { expiresIn: "7d" })
 
-    // Set cookie
-    cookies().set("auth-token", token, {
+    // Set cookie - Fix: await the cookies() function
+    const cookieStore = await cookies()
+    cookieStore.set("auth-token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",

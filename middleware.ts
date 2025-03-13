@@ -3,7 +3,10 @@ import type { NextRequest } from "next/server"
 import { verify } from "jsonwebtoken"
 
 // Paths that don't require authentication
-const publicPaths = ["/", "/auth/login", "/auth/register"]
+const publicPaths = ["/", "/auth/login", "/auth/register", "/auth/forgot-password"]
+
+// API paths that don't require authentication
+const publicApiPaths = ["/api/auth/login", "/api/auth/register", "/api/auth/logout", "/api/auth/session"]
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get("auth-token")?.value
@@ -11,6 +14,11 @@ export function middleware(request: NextRequest) {
 
   // Check if the path is public
   if (publicPaths.includes(pathname)) {
+    return NextResponse.next()
+  }
+
+  // Check if the path is a public API path
+  if (publicApiPaths.some((path) => pathname.startsWith(path))) {
     return NextResponse.next()
   }
 
@@ -50,4 +58,3 @@ export const config = {
     "/((?!_next/static|_next/image|favicon.ico|public).*)",
   ],
 }
-

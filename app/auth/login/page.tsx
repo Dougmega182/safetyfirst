@@ -17,15 +17,16 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const { signIn } = useAuth()
 
+  // Update the handleSubmit function to properly handle login
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
     try {
       await signIn(email, password)
+      // The redirection will be handled in the auth provider
     } catch (error) {
       console.error("Login error:", error)
-    } finally {
       setIsLoading(false)
     }
   }
@@ -97,4 +98,3 @@ export default function LoginPage() {
     </div>
   )
 }
-

@@ -22,6 +22,7 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false)
   const { signUp } = useAuth()
 
+  // Update the validatePasswords function to properly compare passwords
   const validatePasswords = () => {
     if (password !== confirmPassword) {
       setPasswordError("Passwords do not match")
@@ -35,9 +36,11 @@ export default function RegisterPage() {
     return true
   }
 
+  // Also update the handleSubmit function to ensure validation happens before submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    // Run validation before proceeding
     if (!validatePasswords()) {
       return
     }
@@ -160,4 +163,3 @@ export default function RegisterPage() {
     </div>
   )
 }
-

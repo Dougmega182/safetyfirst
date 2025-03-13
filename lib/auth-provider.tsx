@@ -18,6 +18,7 @@ type User = {
 type AuthContextType = {
   user: User | null
   loading: boolean
+  token: string | null
   signIn: (email: string, password: string) => Promise<void>
   signUp: (name: string, email: string, password: string, company?: string, position?: string) => Promise<void>
   signOut: () => void
@@ -26,6 +27,7 @@ type AuthContextType = {
 export const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
+  token: null,
   signIn: async () => {},
   signUp: async () => {},
   signOut: () => {},
@@ -33,6 +35,7 @@ export const AuthContext = createContext<AuthContextType>({
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
+  const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const { toast } = useToast()
@@ -46,6 +49,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const data = await response.json()
           if (data.user) {
             setUser(data.user)
+
+            // Get token from cookie
+            const authToken = document.cookie
+              .split("; ")
+              .find((row) => row.startsWith("auth-token="))
+              ?.split("=")[1]
+
+            if (authToken) {
+              setToken(authToken)
+            }
           }
         }
       } catch (error) {
@@ -58,6 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkAuth()
   }, [])
 
+  // Update the signIn function to properly redirect after login
   const signIn = async (email: string, password: string) => {
     try {
       setLoading(true)
@@ -77,12 +91,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await response.json()
       setUser(data.user)
 
+      // Get token from cookie after login
+      const authToken = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("auth-token="))
+        ?.split("=")[1]
+
+      if (authToken) {
+        setToken(authToken)
+      }
+
       toast({
         title: "Signed in successfully",
-        description: `Welcome back, ${data.user.name}!`,
+        description: `Welcome back, ${data.user.name || "User"}!`,
       })
 
-      router.push("/dashboard")
+      // Get the callback URL from the query parameters if available
+      const urlParams = new URLSearchParams(window.location.search)
+      const callbackUrl = urlParams.get("callbackUrl") || "/dashboard"
+
+      // Redirect to the callback URL or dashboard
+      router.push(callbackUrl)
     } catch (error) {
       console.error("Sign in error:", error)
       toast({
@@ -95,6 +124,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  // Also update the signUp function to properly redirect after registration
   const signUp = async (name: string, email: string, password: string, company?: string, position?: string) => {
     try {
       setLoading(true)
@@ -113,6 +143,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const data = await response.json()
       setUser(data.user)
+
+      // Get token from cookie after registration
+      const authToken = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("auth-token="))
+        ?.split("=")[1]
+
+      if (authToken) {
+        setToken(authToken)
+      }
 
       toast({
         title: "Account created successfully",
@@ -138,6 +178,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         method: "POST",
       })
       setUser(null)
+      setToken(null)
       router.push("/")
       toast({
         title: "Signed out successfully",
@@ -147,6 +188,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  return <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut }}>{children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider value={{ user, loading, token, signIn, signUp, signOut }}>{children}</AuthContext.Provider>
+  )
 }
 
