@@ -17,7 +17,7 @@ export default function Home() {
       {/* Sign-Up Form */}
       <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg w-full max-w-md">
         <div className="text-center">
-          <img src="/TransformHomes_Logo.jpg" alt="Transform Homes Logo" className="mx-auto mb-4 h-12" />
+          <img src="/logo.png" alt="Transform Homes Logo" className="mx-auto mb-4 h-12" />
           <h2 className="text-xl font-semibold">Safety Pass</h2>
           <p className="text-gray-600">Please sign up to continue</p>
         </div>
