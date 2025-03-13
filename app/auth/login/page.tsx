@@ -10,23 +10,29 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { HardHat, Loader2 } from "lucide-react"
+import { useToast } from "@/components/ui/use-toast"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const { signIn } = useAuth()
+  const { toast } = useToast()
 
   // Update the handleSubmit function to properly handle login
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setError(null)
 
     try {
       await signIn(email, password)
       // The redirection will be handled in the auth provider
     } catch (error) {
       console.error("Login error:", error)
+      setError(error instanceof Error ? error.message : "Failed to sign in. Please check your credentials.")
+    } finally {
       setIsLoading(false)
     }
   }
@@ -45,6 +51,24 @@ export default function LoginPage() {
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="grid gap-4">
+              {error && (
+                <div className="rounded-md bg-red-50 p-4">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm font-medium text-red-800">{error}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -98,3 +122,4 @@ export default function LoginPage() {
     </div>
   )
 }
+

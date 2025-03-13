@@ -71,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkAuth()
   }, [])
 
-  // Update the signIn function to properly redirect after login
+  // Update the signIn function to properly handle errors
   const signIn = async (email: string, password: string) => {
     try {
       setLoading(true)
@@ -83,12 +83,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ email, password }),
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.message || "Failed to sign in")
+        throw new Error(data.message || "Failed to sign in")
       }
 
-      const data = await response.json()
       setUser(data.user)
 
       // Get token from cookie after login
@@ -119,12 +119,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         title: "Sign in failed",
         description: error instanceof Error ? error.message : "Please check your credentials and try again.",
       })
+      throw error // Re-throw the error so the login component can handle it
     } finally {
       setLoading(false)
     }
   }
 
-  // Also update the signUp function to properly redirect after registration
+  // Also update the signUp function to properly handle errors
   const signUp = async (name: string, email: string, password: string, company?: string, position?: string) => {
     try {
       setLoading(true)
@@ -136,12 +137,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ name, email, password, company, position }),
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.message || "Failed to sign up")
+        throw new Error(data.message || "Failed to sign up")
       }
 
-      const data = await response.json()
       setUser(data.user)
 
       // Get token from cookie after registration
@@ -167,6 +168,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         title: "Sign up failed",
         description: error instanceof Error ? error.message : "Please try again with different credentials.",
       })
+      throw error // Re-throw the error so the signup component can handle it
     } finally {
       setLoading(false)
     }

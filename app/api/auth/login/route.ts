@@ -8,7 +8,7 @@ export async function POST(request: Request) {
   try {
     const { email, password } = await request.json()
 
-    // Find user
+    // Check if user exists
     const user = await prisma.user.findUnique({
       where: { email },
     })
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Invalid email or password" }, { status: 401 })
     }
 
-    // Verify password
+    // Check password
     const passwordMatch = await bcrypt.compare(password, user.password)
 
     if (!passwordMatch) {
@@ -28,7 +28,8 @@ export async function POST(request: Request) {
     const token = sign({ id: user.id }, process.env.JWT_SECRET || "fallback-secret", { expiresIn: "7d" })
 
     // Set cookie
-    cookies().set("auth-token", token, {
+    const cookieStore = await cookies()
+    cookieStore.set("auth-token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
@@ -36,9 +37,8 @@ export async function POST(request: Request) {
       path: "/",
     })
 
-    // Return user without password
+    // Return user data (excluding password)
     const { password: _, ...userWithoutPassword } = user
-
     return NextResponse.json({ user: userWithoutPassword })
   } catch (error) {
     console.error("Login error:", error)
