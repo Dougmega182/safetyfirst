@@ -22,20 +22,20 @@ export default function LoginPage() {
 
   // Update the handleSubmit function to properly handle login
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError(null)
-
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+  
     try {
-      await signIn(email, password)
-      // The redirection will be handled in the auth provider
+      await signIn(email, password);
+      window.location.href = "/dashboard"; // Redirect user after login
     } catch (error) {
-      console.error("Login error:", error)
-      setError(error instanceof Error ? error.message : "Failed to sign in. Please check your credentials.")
+      setError(error instanceof Error ? error.message : "Failed to sign in. Please check credentials.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
+  
 
   return (
     <div className="container flex h-screen w-screen flex-col items-center justify-center">

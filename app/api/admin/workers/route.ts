@@ -29,59 +29,39 @@ export async function GET(request: Request) {
           ? [
               { name: { contains: search, mode: "insensitive" } },
               { email: { contains: search, mode: "insensitive" } },
-              { company: { contains: search, mode: "insensitive" } },
+              { details: { is: { company: { contains: search, mode: "insensitive" } } } }, // ✅ Fixed
             ]
           : undefined,
       },
       include: {
-        attendances: {
-          where: {
-            ...(siteId && { jobSiteId: siteId }),
-            ...(dateFrom && {
-              signInTime: {
-                gte: dateFrom,
-              },
-            }),
-            ...(dateTo && {
-              signInTime: {
-                lte: dateTo,
-              },
-            }),
-          },
+        details: {
           include: {
-            jobSite: true,
-          },
-        },
-        inductions: {
-          where: {
-            ...(dateFrom && {
-              completedAt: {
-                gte: dateFrom,
+            attendances: {
+              where: {
+                ...(siteId && { jobSiteId: siteId }),
+                ...(dateFrom && { signInTime: { gte: dateFrom } }),
+                ...(dateTo && { signInTime: { lte: dateTo } }),
               },
-            }),
-            ...(dateTo && {
-              completedAt: {
-                lte: dateTo,
+              include: { jobSite: true },
+            },
+            inductions: {
+              where: {
+                ...(dateFrom && { completedAt: { gte: dateFrom } }),
+                ...(dateTo && { completedAt: { lte: dateTo } }),
               },
-            }),
-          },
-        },
-        swmsSignoffs: {
-          where: {
-            ...(dateFrom && {
-              signedAt: {
-                gte: dateFrom,
+            },
+            swmsSignoffs: {
+              where: {
+                ...(dateFrom && { signedAt: { gte: dateFrom } }),
+                ...(dateTo && { signedAt: { lte: dateTo } }),
               },
-            }),
-            ...(dateTo && {
-              signedAt: {
-                lte: dateTo,
-              },
-            }),
+            },
           },
         },
       },
-    })
+    });
+    
+    
 
     // Transform data for the frontend
     const transformedWorkers = workers.map((worker) => {

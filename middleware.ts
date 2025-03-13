@@ -35,14 +35,9 @@ export function middleware(request: NextRequest) {
   }
 
   try {
-    // Verify token
-    verify(token, process.env.JWT_SECRET || "fallback-secret")
-    return NextResponse.next()
+    verify(token, process.env.JWT_SECRET as string) // Ensure it's not fallback-secret
   } catch (error) {
-    // If token is invalid, redirect to login
-    const url = new URL("/auth/login", request.url)
-    url.searchParams.set("callbackUrl", pathname)
-    return NextResponse.redirect(url)
+    return NextResponse.redirect(new URL("/auth/login", request.url))
   }
 }
 
