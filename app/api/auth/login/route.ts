@@ -26,21 +26,25 @@ export async function POST(request: Request) {
     let localUser = await prisma.user.upsert({
       where: { email },
       update: {
-        id: user.id, // Ensure ID matches Stack Auth
         displayName: user.displayName,
         avatar: user.avatar,
-        lastActive: new Date(), // Update last active timestamp
+        lastActive: new Date(),
         authMethod: user.authMethod,
       },
       create: {
-        id: user.id,
+        id: user.id, // Set ID only on create
         displayName: user.displayName,
         email: user.email,
         avatar: user.avatar,
         lastActive: new Date(),
         authMethod: user.authMethod,
         signedUpAt: new Date(user.signedUpAt),
-        details: { create: { company: user.company, position: user.position } },
+        details: {
+          connectOrCreate: {
+            where: { userId: user.id },
+            create: { company: user.company, position: user.position },
+          },
+        },
       },
     });
 
