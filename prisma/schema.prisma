@@ -10,13 +10,14 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid()) // Stack Auth ID
+  id            String    @id @default(uuid()) 
   displayName   String?
   email         String    @unique
-  avatar        String?   // Profile image URL
+  avatar        String?   
+  role          String?
   lastActive    DateTime?
-  authMethod    String?   // OAuth, Email/Password, etc.
-  signedUpAt    DateTime? @default(now()) // Timestamp from Stack Auth
+  authMethod    String?   
+  signedUpAt    DateTime? @default(now()) 
   details       UserDetails?
 
   @@map("users_sync")

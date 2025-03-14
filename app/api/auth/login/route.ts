@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
-import { sign } from "jsonwebtoken";
 
 // STACK AUTH API DETAILS
-const STACK_AUTH_URL = process.env.STACK_AUTH_URL; // Add this to .env
+const STACK_AUTH_URL = process.env.STACK_AUTH_URL;
 
 export async function POST(request: Request) {
   try {
@@ -21,23 +20,31 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Invalid email or password" }, { status: 401 });
     }
 
-    const { user, token } = await stackAuthResponse.json(); // Get user & token from Stack Auth
+    const { user, token } = await stackAuthResponse.json(); // Stack Auth returns user data
 
-    // 🔹 Step 2: Check if user exists locally, if not, create them
-    let localUser = await prisma.user.findUnique({ where: { email } });
+    // 🔹 Step 2: Sync user in local database
+    let localUser = await prisma.user.upsert({
+      where: { email },
+      update: {
+        id: user.id, // Ensure ID matches Stack Auth
+        displayName: user.displayName,
+        avatar: user.avatar,
+        lastActive: new Date(), // Update last active timestamp
+        authMethod: user.authMethod,
+      },
+      create: {
+        id: user.id,
+        displayName: user.displayName,
+        email: user.email,
+        avatar: user.avatar,
+        lastActive: new Date(),
+        authMethod: user.authMethod,
+        signedUpAt: new Date(user.signedUpAt),
+        details: { create: { company: user.company, position: user.position } },
+      },
+    });
 
-    if (!localUser) {
-      localUser = await prisma.user.create({
-        data: {
-          id: user.id, // Use Stack Auth ID
-          name: user.name,
-          email: user.email,
-          details: { create: { company: user.company, position: user.position, role: user.role } },
-        },
-      });
-    }
-
-    // 🔹 Step 3: Set authentication token
+    // 🔹 Step 3: Store Stack Auth token in cookie
     const cookieStore = await cookies();
     cookieStore.set("auth-token", token, {
       httpOnly: true,

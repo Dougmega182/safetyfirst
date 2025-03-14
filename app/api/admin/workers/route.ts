@@ -24,7 +24,7 @@ export async function GET(request: Request) {
     // Fetch all workers (users with role USER)
     const workers = await prisma.user.findMany({
       where: {
-        role: "USER",
+        details: {  role: "USER",},
         OR: search
           ? [
               { name: { contains: search, mode: "insensitive" } },

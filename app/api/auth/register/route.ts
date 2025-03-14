@@ -21,19 +21,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: errorData.message }, { status: 400 });
     }
 
-    const { user, token } = await stackAuthResponse.json(); // Get user details from Stack Auth
+    const { user, token } = await stackAuthResponse.json(); // Get Stack Auth user details
 
     // 🔹 Step 2: Save user in local database
     const localUser = await prisma.user.create({
       data: {
-        id: user.id, // Use Stack Auth ID
-        name: user.name,
+        id: user.id,
+        displayName: user.displayName,
         email: user.email,
+        avatar: user.avatar,
+        lastActive: new Date(),
+        authMethod: user.authMethod,
+        signedUpAt: new Date(user.signedUpAt),
         details: { create: { company, position, role: "USER" } },
       },
     });
 
-    // 🔹 Step 3: Set authentication token
+    // 🔹 Step 3: Store authentication token
     const cookieStore = await cookies();
     cookieStore.set("auth-token", token, {
       httpOnly: true,
