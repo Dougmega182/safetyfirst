@@ -1,8 +1,7 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useAuth } from "@/lib/use-auth"
 import { Button } from "@/components/ui/button"
@@ -11,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { HardHat, Loader2 } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
+import { useSearchParams } from "next/navigation"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -19,16 +19,30 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const { signIn } = useAuth()
   const { toast } = useToast()
+  const searchParams = useSearchParams()
 
-  // Update the handleSubmit function to properly handle login
+  // Handle the callback URL more safely
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
   
     try {
+      // Get the callback URL from search params
+      const callbackUrl = searchParams.get("callbackUrl")
+      
+      // Validate the callback URL to ensure it's not a JavaScript file or API route
+      const safeCallbackUrl = callbackUrl && 
+        callbackUrl.startsWith('/') && 
+        !callbackUrl.includes('.js') && 
+        !callbackUrl.includes('/api/') 
+        ? callbackUrl 
+        : "/dashboard"
+      
       await signIn(email, password);
-      window.location.href = "/dashboard"; // Redirect user after login
+      
+      // Use the safe callback URL
+      window.location.href = safeCallbackUrl;
     } catch (error) {
       setError(error instanceof Error ? error.message : "Failed to sign in. Please check credentials.");
     } finally {

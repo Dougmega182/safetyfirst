@@ -82,36 +82,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
         body: JSON.stringify({ email, password }),
       })
-
+  
       const data = await response.json()
-
+  
       if (!response.ok) {
         throw new Error(data.message || "Failed to sign in")
       }
-
+  
       setUser(data.user)
-
+  
       // Get token from cookie after login
       const authToken = document.cookie
         .split("; ")
         .find((row) => row.startsWith("auth-token="))
         ?.split("=")[1]
-
+  
       if (authToken) {
         setToken(authToken)
       }
-
+  
       toast({
         title: "Signed in successfully",
         description: `Welcome back, ${data.user.name || "User"}!`,
       })
-
-      // Get the callback URL from the query parameters if available
-      const urlParams = new URLSearchParams(window.location.search)
-      const callbackUrl = urlParams.get("callbackUrl") || "/dashboard"
-
-      // Redirect to the callback URL or dashboard
-      router.push(callbackUrl)
+  
+      // We'll let the login page handle the redirect instead
+      // Not redirecting here will prevent issues with the callback URL
+      
     } catch (error) {
       console.error("Sign in error:", error)
       toast({
@@ -119,7 +116,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         title: "Sign in failed",
         description: error instanceof Error ? error.message : "Please check your credentials and try again.",
       })
-      throw error // Re-throw the error so the login component can handle it
+      throw error
     } finally {
       setLoading(false)
     }
