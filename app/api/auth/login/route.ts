@@ -41,10 +41,17 @@ export async function POST(request: Request) {
         signedUpAt: new Date(user.signedUpAt),
         details: {
           connectOrCreate: {
-            where: { userId: user.id },
-            create: { company: user.company, position: user.position },
+            where: {
+              userId: user.id, // Ensure this exists in the `UserDetails` table
+            },
+            create: {
+              id: user.id, // Needed because `userId` is a required field
+              company: user.company || "", 
+              position: user.position || "",
+            },
           },
         },
+        
       },
     });
 
