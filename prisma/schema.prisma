@@ -4,136 +4,91 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  schemas   = ["public", "neon_auth"]
-}
-
-model User {
-  id            String    @id @default(uuid()) 
-  displayName   String?
-  email         String    @unique
-  avatar        String?   
-  role          String?
-  lastActive    DateTime?
-  authMethod    String?   
-  signedUpAt    DateTime? @default(now()) 
-  details       UserDetails?
-
-  @@map("users_sync")
-  @@schema("neon_auth")
-}
-
-
-model UserDetails {
-  id            String    @id @default(cuid())
-  userId        String    @unique
-  company       String?
-  position      String?
-  phone         String?
-  role          Role      @default(USER)
-  user          User        @relation(fields: [userId], references: [id])
-  attendances   Attendance[]
-  inductions    InductionCompletion[]
-  swmsSignoffs  SwmsSignoff[]
-  createdSites  JobSite[]   @relation("SiteCreator")
-  createdSwms   Swms[]      @relation("SwmsCreator")
-
-  @@map("user_details")
-  @@schema("public")
-}
-
-model JobSite {
-  id            String    @id @default(cuid())
-  name          String
-  address       String
-  description   String?
-  imageUrl      String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  createdById   String
-  createdBy     UserDetails @relation("SiteCreator", fields: [createdById], references: [id])
-  attendances   Attendance[]
-  inductions    Induction[]
-  swms          Swms[]
-
-  @@schema("public")
-}
-
-model Attendance {
-  id            String    @id @default(cuid())
-  userId        String
-  jobSiteId     String
-  signInTime    DateTime  @default(now())
-  signOutTime   DateTime?
-  user          UserDetails @relation(fields: [userId], references: [id])
-  jobSite       JobSite     @relation(fields: [jobSiteId], references: [id])
-
-  @@schema("public")
-}
-
-model Induction {
-  id            String    @id @default(cuid())
-  title         String
-  description   String?
-  content       Json
-  jobSiteId     String
-  requiresSignature Boolean @default(true)
-  expiryDays    Int       @default(365)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  jobSite       JobSite   @relation(fields: [jobSiteId], references: [id])
-  completions   InductionCompletion[]
-
-  @@schema("public")
-}
-
-model InductionCompletion {
-  id            String    @id @default(cuid())
-  userId        String
-  inductionId   String
-  completedAt   DateTime  @default(now())
-  signature     String?
-  user          UserDetails @relation(fields: [userId], references: [id])
-  induction     Induction   @relation(fields: [inductionId], references: [id])
-
-  @@schema("public")
-}
-
-model Swms {
-  id            String    @id @default(cuid())
-  title         String
-  description   String?
-  jobSiteId     String
-  content       Json
-  status        SwmsStatus @default(DRAFT)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  createdById   String
-  approvedById  String?
-  approvedAt    DateTime?
-  jobSite       JobSite     @relation(fields: [jobSiteId], references: [id])
-  createdBy     UserDetails @relation("SwmsCreator", fields: [createdById], references: [id])
-  signoffs      SwmsSignoff[]
-
-  @@schema("public")
-}
-
-model SwmsSignoff {
-  id            String    @id @default(cuid())
-  userId        String
-  swmsId        String
-  signedAt      DateTime  @default(now())
-  signature     String
-  user          UserDetails @relation(fields: [userId], references: [id])
-  swms          Swms        @relation(fields: [swmsId], references: [id])
-
-  @@schema("public")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["public", "neon_auth"]
 }
 
 enum Role {
   USER
   ADMIN
+
+  @@schema("public")
+}
+
+model Induction {
+  id                String                @id @default(cuid())
+  title             String
+  description       String?
+  content           Json
+  jobSiteId         String
+  requiresSignature Boolean               @default(true)
+  expiryDays        Int                   @default(365)
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+  jobSite           JobSite               @relation(fields: [jobSiteId], references: [id])
+  completions       InductionCompletion[]
+
+  @@schema("public")
+}
+
+model InductionCompletion {
+  id          String      @id @default(cuid())
+  userId      String
+  inductionId String
+  completedAt DateTime    @default(now())
+  signature   String?
+  user        UserDetails @relation(fields: [userId], references: [id])
+  induction   Induction   @relation(fields: [inductionId], references: [id]) // ✅ Now Induction exists above
+
+  @@schema("public")
+}
+
+model JobSite {
+  id          String       @id @default(cuid())
+  name        String
+  address     String
+  description String?
+  imageUrl    String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  createdById String
+  createdBy   UserDetails  @relation("SiteCreator", fields: [createdById], references: [id])
+  attendances Attendance[]
+  inductions  Induction[] // ✅ Now Induction exists above
+  swms        Swms[]
+
+  @@schema("public")
+}
+
+model Attendance {
+  id          String      @id @default(cuid())
+  userId      String
+  jobSiteId   String
+  signInTime  DateTime    @default(now())
+  signOutTime DateTime?
+  user        UserDetails @relation(fields: [userId], references: [id])
+  jobSite     JobSite     @relation(fields: [jobSiteId], references: [id])
+
+  @@schema("public")
+}
+
+model Swms {
+  id           String        @id @default(cuid())
+  title        String
+  description  String?
+  jobSiteId    String
+  content      Json
+  status       SwmsStatus    @default(DRAFT)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  createdById  String
+  approvedById String?
+  approvedAt   DateTime?
+  jobSite      JobSite       @relation(fields: [jobSiteId], references: [id])
+  createdBy    UserDetails   @relation("SwmsCreator", fields: [createdById], references: [id])
+  signoffs     SwmsSignoff[]
+
   @@schema("public")
 }
 
@@ -142,5 +97,52 @@ enum SwmsStatus {
   PENDING
   APPROVED
   REJECTED
+
+  @@schema("public")
+}
+
+model SwmsSignoff {
+  id        String      @id @default(cuid())
+  userId    String
+  swmsId    String
+  signedAt  DateTime    @default(now())
+  signature String
+  user      UserDetails @relation(fields: [userId], references: [id])
+  swms      Swms        @relation(fields: [swmsId], references: [id])
+
+  @@schema("public")
+}
+
+model User {
+  id          String    @id @default(uuid())
+  displayName String?
+  email       String    @unique
+  avatar      String?
+  lastActive  DateTime?
+  authMethod  String?
+  signedUpAt  DateTime? @default(now())
+
+  details UserDetails? @relation("UserDetailsRelation")
+
+  @@map("users_sync")
+  @@schema("neon_auth")
+}
+
+model UserDetails {
+  id       String  @id @default(cuid())
+  userId   String  @unique
+  company  String?
+  position String?
+  phone    String?
+  role     Role    @default(USER)
+  user     User    @relation("UserDetailsRelation", fields: [userId], references: [id])
+
+  attendances  Attendance[]
+  inductions   InductionCompletion[]
+  swmsSignoffs SwmsSignoff[]
+  createdSites JobSite[]             @relation("SiteCreator")
+  createdSwms  Swms[]                @relation("SwmsCreator")
+
+  @@map("user_details")
   @@schema("public")
 }

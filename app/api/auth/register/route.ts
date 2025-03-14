@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     const localUser = await prisma.user.create({
       data: {
         id: user.id,
-        displayName: user.displayName,
+        name: user.displayName,
         email: user.email,
         avatar: user.avatar,
         lastActive: new Date(),
