@@ -1,6 +1,10 @@
 let userConfig = undefined
 try {
   userConfig = await import('./v0-user-next.config')
+  // If the import returns a default export, extract it
+  if (userConfig.default) {
+    userConfig = userConfig.default
+  }
 } catch (e) {
   // ignore error
 }
@@ -23,26 +27,31 @@ const nextConfig = {
   },
 }
 
-mergeConfig(nextConfig, userConfig)
-
-function mergeConfig(nextConfig, userConfig) {
+// Merge the configs properly
+function mergeConfig(baseConfig, userConfig) {
   if (!userConfig) {
-    return
+    return baseConfig
   }
+
+  const mergedConfig = { ...baseConfig }
 
   for (const key in userConfig) {
     if (
-      typeof nextConfig[key] === 'object' &&
-      !Array.isArray(nextConfig[key])
+      typeof baseConfig[key] === 'object' &&
+      !Array.isArray(baseConfig[key]) &&
+      baseConfig[key] !== null
     ) {
-      nextConfig[key] = {
-        ...nextConfig[key],
+      mergedConfig[key] = {
+        ...baseConfig[key],
         ...userConfig[key],
       }
     } else {
-      nextConfig[key] = userConfig[key]
+      mergedConfig[key] = userConfig[key]
     }
   }
+
+  return mergedConfig
 }
 
-export default nextConfig
+// Use the merged config for the export
+export default mergeConfig(nextConfig, userConfig)
