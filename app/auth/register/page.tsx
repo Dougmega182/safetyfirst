@@ -20,7 +20,9 @@ export default function RegisterPage() {
   const [position, setPosition] = useState("")
   const [passwordError, setPasswordError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const { signUp } = useAuth()
+  const searchParams = useSearchParams()
 
   // Update the validatePasswords function to properly compare passwords
   const validatePasswords = () => {
@@ -38,29 +40,38 @@ export default function RegisterPage() {
 
   // Also update the handleSubmit function to ensure validation happens before submission
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    // Run validation before proceeding
-    if (!validatePasswords()) {
-      return
-    }
-
-    setIsLoading(true)
-
-    try {
-      await signUp(name, email, password, company, position)
-    } catch (error) {
-      console.error("Registration error:", error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+      e.preventDefault();
+      setIsLoading(true);
+      setError(null);
+    
+      try {
+        // Get the callback URL from search params
+        const callbackUrl = searchParams.get("callbackUrl")
+        
+        // Validate the callback URL to ensure it's not a JavaScript file or API route
+        const safeCallbackUrl = callbackUrl && 
+          callbackUrl.startsWith('/') && 
+          !callbackUrl.includes('.js') && 
+          !callbackUrl.includes('/api/') 
+          ? callbackUrl 
+          : "/dashboard"
+        
+        await signIn(email, password);
+        
+        // Use the safe callback URL
+        window.location.href = safeCallbackUrl;
+      } catch (error) {
+        setError(error instanceof Error ? error.message : "Failed to sign in. Please check credentials.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
   return (
     <div className="container flex h-screen w-screen flex-col items-center justify-center">
       <Link href="/" className="absolute left-4 top-4 flex items-center gap-2 md:left-8 md:top-8">
         <HardHat className="h-6 w-6 text-blue-600" />
-        <span className="text-lg font-bold">SafetyFirst</span>
+        <span className="text-lg font-bold">Safety Pass</span>
       </Link>
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
         <Card>
