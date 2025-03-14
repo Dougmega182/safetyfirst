@@ -21,7 +21,6 @@ export default function LoginPage() {
   const { toast } = useToast()
   const searchParams = useSearchParams()
 
-  // Handle the callback URL more safely
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -55,7 +54,7 @@ export default function LoginPage() {
     <div className="container flex h-screen w-screen flex-col items-center justify-center">
       <Link href="/" className="absolute left-4 top-4 flex items-center gap-2 md:left-8 md:top-8">
         <HardHat className="h-6 w-6 text-blue-600" />
-        <span className="text-lg font-bold">SafetyFirst</span>
+        <span className="text-lg font-bold">Safety Pass</span>
       </Link>
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
         <Card>
