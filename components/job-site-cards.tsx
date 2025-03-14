@@ -1,65 +1,71 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import Link from "next/link"
+import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { MapPin } from "lucide-react"
+import Link from "next/link"
+import { MapPin, Users } from "lucide-react"
 
 type JobSite = {
   id: string
   name: string
   address: string
-  imageUrl: string
+  description?: string
+  activeWorkers?: number
 }
 
+const MOCK_JOBSITES: JobSite[] = [
+  {
+    id: "site_1",
+    name: "Downtown Tower Project",
+    address: "123 Main St, Sydney NSW 2000",
+    description: "A 30-story commercial tower development",
+    activeWorkers: 15,
+  },
+  {
+    id: "site_2",
+    name: "Harbour Bridge Upgrade",
+    address: "Sydney Harbour Bridge, Sydney NSW 2060",
+    description: "Maintenance and upgrade of the iconic Harbour Bridge",
+    activeWorkers: 8,
+  },
+  {
+    id: "site_3",
+    name: "WestConnex Tunnel",
+    address: "M4 East, Haberfield NSW 2045",
+    description: "Construction of the WestConnex tunnel",
+    activeWorkers: 22,
+  },
+]
+
 export default function JobSiteCards() {
-  const [jobSites, setJobSites] = useState<JobSite[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchJobSites = async () => {
-      try {
-        const response = await fetch("/api/job-sites")
-        if (response.ok) {
-          const data = await response.json()
-          setJobSites(data.jobSites)
-        }
-      } catch (error) {
-        console.error("Error fetching job sites:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchJobSites()
-  }, [])
-
-  if (isLoading) {
-    return <div>Loading job sites...</div>
-  }
+  const [jobSites, setJobSites] = useState<JobSite[]>(MOCK_JOBSITES)
 
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {jobSites.map((site) => (
-        <Card key={site.id} className="overflow-hidden">
-          <div className="h-48 w-full overflow-hidden">
-            <img
-              src={site.imageUrl || `/placeholder.svg?height=200&width=400`}
-              alt={site.name}
-              className="h-full w-full object-cover"
-            />
-          </div>
+        <Card key={site.id}>
           <CardHeader>
             <CardTitle>{site.name}</CardTitle>
-            <CardDescription className="flex items-center">
-              <MapPin className="mr-2 h-4 w-4" /> {site.address}
-            </CardDescription>
+            <CardDescription>{site.address}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild className="w-full">
-              <Link href={`/job-sites/${site.id}`}>Enter Site</Link>
-            </Button>
+            <div className="flex items-center mb-4">
+              <MapPin className="h-5 w-5 mr-2 text-muted-foreground" />
+              <span>{site.description}</span>
+            </div>
+            <div className="flex items-center mb-4">
+              <Users className="h-5 w-5 mr-2 text-muted-foreground" />
+              <span>{site.activeWorkers} active workers</span>
+            </div>
+            <div className="flex space-x-2">
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/job-sites/${site.id}`}>Details</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href={`/job-sites/${site.id}/sign-in`}>Sign In</Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
       ))}

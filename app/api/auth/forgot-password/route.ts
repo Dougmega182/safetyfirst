@@ -30,8 +30,7 @@ export async function POST(request: Request) {
 
     // In a production app, you would send an email with the reset link
     // For now, we'll just log it and return a success message
-    console.log(`Reset token for ${email}: ${resetToken}`);
-
+    console.log(`Reset token for ${email}: ${resetToken}`)
 
     // If SMTP is configured, send an actual email
     if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASSWORD) {

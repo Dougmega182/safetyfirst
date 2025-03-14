@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useRef, useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Eraser, Save } from 'lucide-react'
+import { Eraser, Save } from "lucide-react"
 
 interface SignatureCanvasProps {
   onSave: (signature: string | null) => void
@@ -15,13 +15,13 @@ export default function SignatureCanvas({ onSave }: SignatureCanvasProps) {
   const [isDrawing, setIsDrawing] = useState(false)
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null)
   const [isMobile, setIsMobile] = useState(false)
-  
+
   // Handle mobile detection directly in the component
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768)
     }
-    
+
     handleResize()
     window.addEventListener("resize", handleResize)
     return () => window.removeEventListener("resize", handleResize)

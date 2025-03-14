@@ -3,7 +3,6 @@
 import type React from "react"
 
 import { createContext, useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
 import { useToast } from "@/components/ui/use-toast"
 
 type User = {
@@ -37,7 +36,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const router = useRouter()
   const { toast } = useToast()
 
   // Check if user is logged in on mount
@@ -71,7 +69,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkAuth()
   }, [])
 
-  // Update the signIn function to properly handle errors
   const signIn = async (email: string, password: string) => {
     try {
       setLoading(true)
@@ -82,33 +79,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
         body: JSON.stringify({ email, password }),
       })
-  
+
       const data = await response.json()
-  
+
       if (!response.ok) {
         throw new Error(data.message || "Failed to sign in")
       }
-  
+
       setUser(data.user)
-  
+
       // Get token from cookie after login
       const authToken = document.cookie
         .split("; ")
         .find((row) => row.startsWith("auth-token="))
         ?.split("=")[1]
-  
+
       if (authToken) {
         setToken(authToken)
       }
-  
+
       toast({
         title: "Signed in successfully",
         description: `Welcome back, ${data.user.name || "User"}!`,
       })
-  
-      // We'll let the login page handle the redirect instead
-      // Not redirecting here will prevent issues with the callback URL
-      
+
+      // Get the callback URL from the query parameters if available
+      const urlParams = new URLSearchParams(window.location.search)
+      const callbackUrl = urlParams.get("callbackUrl") || "/dashboard"
+
+      // Force a hard navigation instead of client-side routing
+      window.location.href = callbackUrl
     } catch (error) {
       console.error("Sign in error:", error)
       toast({
@@ -116,13 +116,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         title: "Sign in failed",
         description: error instanceof Error ? error.message : "Please check your credentials and try again.",
       })
-      throw error
+      throw error // Re-throw the error so the login component can handle it
     } finally {
       setLoading(false)
     }
   }
 
-  // Also update the signUp function to properly handle errors
   const signUp = async (name: string, email: string, password: string, company?: string, position?: string) => {
     try {
       setLoading(true)
@@ -157,7 +156,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         description: `Welcome, ${name}!`,
       })
 
-      router.push("/dashboard")
+      // Force a hard navigation instead of client-side routing
+      window.location.href = "/dashboard"
     } catch (error) {
       console.error("Sign up error:", error)
       toast({
@@ -178,7 +178,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
       setUser(null)
       setToken(null)
-      router.push("/")
+
+      // Force a hard navigation instead of client-side routing
+      window.location.href = "/"
+
       toast({
         title: "Signed out successfully",
       })

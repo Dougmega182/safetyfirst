@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/components/ui/use-toast"
-import { ArrowLeft, Plus, Save, Trash2 } from 'lucide-react'
+import { ArrowLeft, Plus, Save, Trash2 } from "lucide-react"
 import Link from "next/link"
 import dynamic from "next/dynamic"
 
@@ -241,9 +241,7 @@ export default function NewSwmsPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="signature">Signature</Label>
-                <div className="rounded-lg border p-4">
-                  {isMounted && <SignatureCanvas onSave={setSignature} />}
-                </div>
+                <div className="rounded-lg border p-4">{isMounted && <SignatureCanvas onSave={setSignature} />}</div>
                 {signature && <p className="text-sm text-green-600">Signature captured successfully</p>}
               </div>
             </CardContent>

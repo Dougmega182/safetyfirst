@@ -1,55 +1,66 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { cookies } from "next/headers";
-
-// STACK AUTH API DETAILS
-const STACK_AUTH_URL = process.env.STACK_AUTH_URL;
+import { NextResponse } from "next/server"
+import { cookies } from "next/headers"
+import { stackServer } from "@/lib/stack-auth"
 
 export async function POST(request: Request) {
   try {
-    const { name, email, password, company, position } = await request.json();
+    const { name, email, password } = await request.json()
 
-    // 🔹 Step 1: Register user in Stack Auth
-    const stackAuthResponse = await fetch(`${STACK_AUTH_URL}/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    });
-
-    if (!stackAuthResponse.ok) {
-      const errorData = await stackAuthResponse.json();
-      return NextResponse.json({ message: errorData.message }, { status: 400 });
+    // Validate input
+    if (!name || !email || !password) {
+      return NextResponse.json({ message: "Name, email, and password are required" }, { status: 400 })
     }
 
-    const { user, token } = await stackAuthResponse.json(); // Get Stack Auth user details
+    // Check if user already exists
+    try {
+      const existingUser = await stackServer.getUserByEmail(email)
+      if (existingUser) {
+        return NextResponse.json({ message: "User with this email already exists" }, { status: 409 })
+      }
+    } catch (error) {
+      // If error is "user not found", continue with registration
+      // Otherwise, throw the error
+      if ((error as any).code !== "user_not_found") {
+        throw error
+      }
+    }
 
-    // 🔹 Step 2: Save user in local database
-    const localUser = await prisma.user.create({
-      data: {
-        id: user.id,
-        displayName: user.displayName,
-        email: user.email,
-        avatar: user.avatar,
-        lastActive: new Date(),
-        authMethod: user.authMethod,
-        signedUpAt: new Date(user.signedUpAt),
-        details: { create: { company, position, role: "USER" } },
-      },
-    });
+    // Create user with Stack Auth
+    const user = await stackServer.createUser({
+      name,
+      email,
+      password,
+      role: "USER",
+    })
 
-    // 🔹 Step 3: Store authentication token
-    const cookieStore = await cookies();
-    cookieStore.set("auth-token", token, {
+    // Create session token
+    const session = await stackServer.createSession({
+      userId: user.id,
+      expiresIn: "7d",
+    })
+
+    // Set cookie with session token
+    const cookieStore = await cookies()
+    cookieStore.set("auth-session", session.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: "/",
-    });
+    })
 
-    return NextResponse.json({ user: localUser });
+    // Return user data
+    return NextResponse.json({
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role || "USER",
+      },
+    })
   } catch (error) {
-    console.error("Registration error:", error);
-    return NextResponse.json({ message: "An error occurred during registration" }, { status: 500 });
+    console.error("Registration error:", error)
+    return NextResponse.json({ message: "An error occurred during registration" }, { status: 500 })
   }
 }
+

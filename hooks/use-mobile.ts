@@ -1,28 +1,5 @@
 "use client"
 
-// Updated hooks/useIsMobile.js
-import { useState, useEffect } from 'react';
+// Re-export the useMobile hook from the mobile-provider
+export { useMobile } from "@/components/mobile-provider"
 
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const handleResize = () => {
-        setIsMobile(window.innerWidth < 768);
-      };
-
-      handleResize(); // Initial check
-
-      window.addEventListener('resize', handleResize);
-
-      return () => {
-        window.removeEventListener('resize', handleResize);
-      };
-    }
-  }, []);
-
-  return isMobile;
-}
-
-export default useIsMobile;

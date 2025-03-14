@@ -1,122 +1,110 @@
 "use client"
 
-import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { HardHat, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, X, HardHat } from "lucide-react"
+import { UserButton } from "@stackframe/stack"
 import { useAuth } from "@/lib/use-auth"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { SidebarTrigger } from "@/components/ui/sidebar"
+import { Sidebar } from "./sidebar"
 
-export default function Header() {
-  const [open, setOpen] = useState(false)
+export function Header() {
   const pathname = usePathname()
-  const { user, signOut } = useAuth()
+  const { user, loading } = useAuth()
 
-  const isHomePage = pathname === "/"
+  const isAuthenticated = !loading && user
+  const isAdminRoute = pathname?.startsWith("/admin")
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background">
-      <div className="container flex h-16 items-center px-4 sm:px-6">
-        {!isHomePage && <SidebarTrigger className="mr-2 md:hidden" />}
-
-        {isHomePage && (
-          <Link href="/" className="flex items-center gap-2">
-            <HardHat className="h-6 w-6 text-blue-600" />
-            <span className="text-xl font-bold">SafetyFirst</span>
-          </Link>
-        )}
-
-        <div className="ml-auto flex items-center gap-4">
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback>{user.name?.[0] || "U"}</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <div className="flex items-center justify-start gap-2 p-2">
-                  <div className="flex flex-col space-y-1 leading-none">
-                    <p className="font-medium">{user.name || "User"}</p>
-                    <p className="text-xs text-muted-foreground">{user.email}</p>
-                  </div>
-                </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/profile">Profile</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/dashboard">Dashboard</Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onSelect={(event) => {
-                    event.preventDefault()
-                    signOut()
-                  }}
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 items-center">
+        <Link href="/" className="flex items-center gap-2 font-semibold">
+          <HardHat className="h-6 w-6 text-blue-600" />
+          <span>SafetyFirst</span>
+        </Link>
+        <div className="flex flex-1 items-center justify-end space-x-2">
+          {isAuthenticated ? (
+            <>
+              <nav className="hidden md:flex items-center space-x-4 lg:space-x-6 mx-6">
+                <Link
+                  href="/dashboard"
+                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                    pathname === "/dashboard" ? "text-primary" : "text-muted-foreground"
+                  }`}
                 >
-                  Sign out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <div className="hidden md:block">
-              <Button asChild variant="ghost" className="mr-2">
-                <Link href="/auth/login">Sign In</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/auth/register">Sign Up</Link>
-              </Button>
-            </div>
-          )}
-          {isHomePage && (
-            <Sheet open={open} onOpenChange={setOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
-                  <Menu className="h-5 w-5" />
-                  <span className="sr-only">Toggle menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right">
-                <div className="flex items-center justify-between">
-                  <Link href="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-                    <HardHat className="h-6 w-6 text-blue-600" />
-                    <span className="text-xl font-bold">SafetyFirst</span>
+                  Dashboard
+                </Link>
+                <Link
+                  href="/job-sites"
+                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                    pathname?.startsWith("/job-sites") ? "text-primary" : "text-muted-foreground"
+                  }`}
+                >
+                  Job Sites
+                </Link>
+                <Link
+                  href="/inductions"
+                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                    pathname?.startsWith("/inductions") ? "text-primary" : "text-muted-foreground"
+                  }`}
+                >
+                  Inductions
+                </Link>
+                <Link
+                  href="/swms"
+                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                    pathname?.startsWith("/swms") ? "text-primary" : "text-muted-foreground"
+                  }`}
+                >
+                  SWMS
+                </Link>
+                {user?.role === "ADMIN" && (
+                  <Link
+                    href="/admin/dashboard"
+                    className={`text-sm font-medium transition-colors hover:text-primary ${
+                      isAdminRoute ? "text-primary" : "text-muted-foreground"
+                    }`}
+                  >
+                    Admin
                   </Link>
-                  <Button variant="ghost" size="icon" onClick={() => setOpen(false)}>
-                    <X className="h-5 w-5" />
-                    <span className="sr-only">Close menu</span>
+                )}
+              </nav>
+
+              <UserButton
+                showUserInfo={true}
+                extraItems={[
+                  {
+                    text: "Dashboard",
+                    icon: <HardHat className="h-4 w-4" />,
+                    onClick: () => (window.location.href = "/dashboard"),
+                  },
+                ]}
+              />
+
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="icon" className="md:hidden">
+                    <Menu className="h-5 w-5" />
+                    <span className="sr-only">Toggle menu</span>
                   </Button>
-                </div>
-                <nav className="mt-8">
-                  <ul className="flex flex-col gap-4">
-                    {!user && (
-                      <div className="mt-8 flex flex-col gap-2">
-                        <Button asChild variant="outline" onClick={() => setOpen(false)}>
-                          <Link href="/auth/login">Sign In</Link>
-                        </Button>
-                        <Button asChild onClick={() => setOpen(false)}>
-                          <Link href="/auth/register">Sign Up</Link>
-                        </Button>
-                      </div>
-                    )}
-                  </ul>
-                </nav>
-              </SheetContent>
-            </Sheet>
+                </SheetTrigger>
+                <SheetContent side="right" className="pr-0">
+                  <Sidebar />
+                </SheetContent>
+              </Sheet>
+            </>
+          ) : (
+            <>
+              <Link href="/auth/login">
+                <Button variant="ghost" size="sm">
+                  Log in
+                </Button>
+              </Link>
+              <Link href="/auth/register">
+                <Button size="sm">Sign up</Button>
+              </Link>
+            </>
           )}
         </div>
       </div>
