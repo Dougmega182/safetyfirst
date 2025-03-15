@@ -1,3 +1,4 @@
+// safetyfirst/prisma/seed.ts
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcrypt');
 const prisma = new PrismaClient();
@@ -133,4 +134,5 @@ main()
   .finally(() => {
     process.exit(0);
   });
+
 

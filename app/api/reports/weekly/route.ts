@@ -1,3 +1,5 @@
+// safetyfirst/app/api/reports/weekly/route.ts
+// app/api/reports/weekly/route.ts
 import { NextResponse } from "next/server"
 import { generateWeeklyReport } from "@/lib/weekly-report"
 import { getUserFromRequest } from "@/lib/auth-utils"
@@ -33,4 +35,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "An error occurred while generating the weekly report" }, { status: 500 })
   }
 }
+
 

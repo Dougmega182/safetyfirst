@@ -1,126 +1,121 @@
-import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
-import { getUserFromRequest } from "@/lib/auth-utils"
-import { startOfWeek } from "date-fns"
+// safetyfirst/app/api/admin/workers/route.ts
+// api/admin/workers routes.ts
+import { verify } from "jsonwebtoken";
+import { PrismaClient } from "@prisma/client";
 
-export async function GET(request: Request) {
+const prisma = new PrismaClient();
+
+/**
+ * Get basic user information from a request
+ */
+export async function getUserFromRequest(request: Request) {
   try {
-    const user = await getUserFromRequest(request)
+    // For API routes, get the token from the cookie in the request
+    const cookieHeader = request.headers.get("cookie");
+    if (!cookieHeader) return null;
 
-    if (!user || (user.role !== "CEO" && user.role !== "ADMIN")) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
-    }
+    const cookies = parseCookies(cookieHeader);
+    const token = cookies["auth-token"];
 
-    // Get query parameters
-    const url = new URL(request.url)
-    const siteId = url.searchParams.get("siteId")
-    const dateFrom = url.searchParams.get("from") ? new Date(url.searchParams.get("from") as string) : undefined
-    const dateTo = url.searchParams.get("to") ? new Date(url.searchParams.get("to") as string) : undefined
-    const search = url.searchParams.get("search") || ""
+    if (!token) return null;
 
-    // Get the start of the current week
-    const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 }) // Monday as start of week
+    const decoded = verify(
+      token,
+      process.env.JWT_SECRET || "fallback-secret"
+    ) as { id: string };
 
-    // Fetch all workers (users with role USER)
-    const workers = await prisma.user.findMany({
-      where: {
-        role: "USER",
-        OR: search
-          ? [
-              { name: { contains: search, mode: "insensitive" } },
-              { email: { contains: search, mode: "insensitive" } },
-              { company: { contains: search, mode: "insensitive" } },
-            ]
-          : undefined,
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.id },
+      select: {
+        id: true,
+        displayName: true,
+        email: true,
+        authMethod: true,
       },
-      include: {
-        attendances: {
-          where: {
-            ...(siteId && { jobSiteId: siteId }),
-            ...(dateFrom && {
-              signInTime: {
-                gte: dateFrom,
-              },
-            }),
-            ...(dateTo && {
-              signInTime: {
-                lte: dateTo,
-              },
-            }),
-          },
-          include: {
-            jobSite: true,
-          },
-        },
-        inductions: {
-          where: {
-            ...(dateFrom && {
-              completedAt: {
-                gte: dateFrom,
-              },
-            }),
-            ...(dateTo && {
-              completedAt: {
-                lte: dateTo,
-              },
-            }),
-          },
-        },
-        swmsSignoffs: {
-          where: {
-            ...(dateFrom && {
-              signedAt: {
-                gte: dateFrom,
-              },
-            }),
-            ...(dateTo && {
-              signedAt: {
-                lte: dateTo,
-              },
-            }),
-          },
-        },
-      },
-    })
+    });
 
-    // Transform data for the frontend
-    const transformedWorkers = workers.map((worker) => {
-      // Find current active attendance (if any)
-      const activeAttendance = worker.attendances.find((a) => a.signOutTime === null)
-
-      // Calculate total hours this week
-      const weeklyAttendances = worker.attendances.filter((a) => {
-        const signInDate = new Date(a.signInTime)
-        return signInDate >= weekStart && a.signOutTime !== null
-      })
-
-      const totalHoursThisWeek = weeklyAttendances.reduce((total, attendance) => {
-        if (!attendance.signOutTime) return total
-
-        const signInTime = new Date(attendance.signInTime).getTime()
-        const signOutTime = new Date(attendance.signOutTime).getTime()
-        const durationHours = (signOutTime - signInTime) / (1000 * 60 * 60)
-
-        return total + durationHours
-      }, 0)
-
-      return {
-        id: worker.id,
-        name: worker.name || "Unknown",
-        email: worker.email,
-        company: worker.company || "",
-        currentSite: activeAttendance ? activeAttendance.jobSite.name : null,
-        signInTime: activeAttendance ? activeAttendance.signInTime.toISOString() : null,
-        totalHoursThisWeek,
-        completedInductions: worker.inductions.length,
-        signedSwms: worker.swmsSignoffs.length,
-      }
-    })
-
-    return NextResponse.json({ workers: transformedWorkers })
+    return user;
   } catch (error) {
-    console.error("Error fetching admin worker data:", error)
-    return NextResponse.json({ message: "An error occurred while fetching worker data" }, { status: 500 })
+    console.error("Error getting user from request:", error);
+    return null;
   }
+}
+
+/**
+ * Get user details from request
+ */
+export async function getUserDetailsFromRequest(request: Request) {
+  try {
+    const cookieHeader = request.headers.get("cookie");
+    if (!cookieHeader) return null;
+
+    const cookies = parseCookies(cookieHeader);
+    const token = cookies["auth-token"];
+
+    if (!token) return null;
+
+    const decoded = verify(
+      token,
+      process.env.JWT_SECRET || "fallback-secret"
+    ) as { id: string };
+
+    // Find the user first
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.id },
+    });
+
+    if (!user) return null;
+
+    // Then find the user details using the userId field
+    const userDetails = await prisma.userDetails.findUnique({
+      where: { userId: user.id },
+    });
+
+    return userDetails;
+  } catch (error) {
+    console.error("Error getting user details from request:", error);
+    return null;
+  }
+}
+
+/**
+ * Get complete user profile with details
+ */
+export async function getCompleteUserProfile(request: Request) {
+  try {
+    const cookieHeader = request.headers.get("cookie");
+    if (!cookieHeader) return null;
+
+    const cookies = parseCookies(cookieHeader);
+    const token = cookies["auth-token"];
+
+    if (!token) return null;
+
+    const decoded = verify(
+      token,
+      process.env.JWT_SECRET || "fallback-secret"
+    ) as { id: string };
+
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.id },
+      include: {
+        details: true, // This is the correct field name from your schema
+      },
+    });
+
+    return user;
+  } catch (error) {
+    console.error("Error getting complete user profile:", error);
+    return null;
+  }
+}
+
+// Helper function to parse cookies from header
+function parseCookies(cookieHeader: string) {
+  return cookieHeader.split(";").reduce((cookies, cookie) => {
+    const [name, value] = cookie.trim().split("=");
+    cookies[name] = decodeURIComponent(value);
+    return cookies;
+  }, {} as Record<string, string>);
 }
 

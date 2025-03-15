@@ -1,3 +1,4 @@
+// safetyfirst/lib/weekly-report.ts
 import { prisma } from "./prisma"
 import { startOfWeek, endOfWeek, format } from "date-fns"
 import nodemailer from "nodemailer"
@@ -122,7 +123,7 @@ export async function generateWeeklyReport() {
     }
 
     // Save report to database
-    const report = await prisma.weeklyReport.create({
+    const reports = await prisma.weeklyReport.findMany({
       data: {
         weekStarting: weekStart,
         weekEnding: weekEnd,
@@ -205,4 +206,5 @@ export async function generateWeeklyReport() {
     return { success: false, error }
   }
 }
+
 

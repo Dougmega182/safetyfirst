@@ -1,3 +1,4 @@
+// safetyfirst/lib/use-auth.tsx
 "use client"
 
 import { useContext } from "react"
@@ -12,4 +13,5 @@ export function useAuth() {
 
   return context
 }
+
 

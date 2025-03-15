@@ -1,3 +1,5 @@
+// safetyfirst/app/api/inductions/route.ts
+// app/apiinductions/route.ts
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getUserFromRequest } from "@/lib/auth-utils"
@@ -63,4 +65,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "An error occurred while creating the induction" }, { status: 500 })
   }
 }
+
 

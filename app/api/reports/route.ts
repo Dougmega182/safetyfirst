@@ -1,3 +1,5 @@
+// safetyfirst/app/api/reports/route.ts
+// app/api/reports/route.ts
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getUserFromRequest } from "@/lib/auth-utils"
@@ -32,4 +34,5 @@ export async function GET(request: Request) {
     return NextResponse.json({ message: "Anrror occurred while fetching reports" }, { status: 500 })
   }
 }
+
 

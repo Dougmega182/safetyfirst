@@ -1,3 +1,4 @@
+// app/api/job-sites/[id]/attendance/check/route.ts
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getUserFromRequest } from "@/lib/auth-utils"

@@ -1,4 +1,4 @@
-// lib/auth-server.ts
+// safetyfirst/lib/auth-server.ts
 import { headers } from "next/headers"
 import { createRemoteJWKSet, jwtVerify } from "jose"
 
@@ -15,7 +15,8 @@ export interface VerifiedUser {
 
 export async function verifyAuthToken(): Promise<VerifiedUser | null> {
   try {
-    const headersList = headers()
+    // Await the headers() to resolve the promise
+    const headersList = await headers()
     const accessToken = headersList.get("x-stack-access-token")
 
     if (!accessToken?.startsWith("Bearer ")) return null
@@ -38,14 +39,16 @@ export async function verifyAuthToken(): Promise<VerifiedUser | null> {
       audience: "api"
     })
 
+    // Type assertion here to ensure payload has the correct type
     return {
-      id: payload.sub!,
-      email: payload.email,
-      name: payload.name,
-      roles: payload.roles || []
+      id: (payload as any).sub!,
+      email: (payload as any).email,
+      name: (payload as any).name,
+      roles: (payload as any).roles || []
     }
   } catch (error) {
     console.error("Auth verification failed:", error)
     return null
   }
 }
+

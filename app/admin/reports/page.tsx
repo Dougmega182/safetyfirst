@@ -1,5 +1,6 @@
+// safetyfirst/app/admin/reports/page.tsx
 "use client"
-
+// repots page.tsx
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/use-auth"
@@ -208,4 +209,5 @@ export default function AdminReportsPage() {
     </div>
   )
 }
+
 

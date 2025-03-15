@@ -1,3 +1,5 @@
+// safetyfirst/app/auth/register/page.tsx
+// /app/auth/register/page.tsx 
 "use client"
 
 import type React from "react"
@@ -163,4 +165,5 @@ export default function RegisterPage() {
     </div>
   )
 }
+
 

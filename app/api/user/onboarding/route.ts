@@ -1,3 +1,5 @@
+// safetyfirst/app/api/user/onboarding/route.ts
+// app/api/user/onboarding/route.ts
 import { NextResponse } from "next/server"
 import { cookies } from "next/headers"
 import { verify } from "jsonwebtoken"
@@ -39,4 +41,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to update user metadata" }, { status: 500 })
   }
 }
+
 

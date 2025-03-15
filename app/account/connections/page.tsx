@@ -1,5 +1,6 @@
+// safetyfirst/app/account/connections/page.tsx
 "use client"
-
+//connections page.tsx
 import { useUser } from "@stackframe/stack"
 import { ConnectOAuth } from "@/components/connect-oauth"
 import { type OAuthProvider, providerScopes } from "@/lib/oauth-utils"
@@ -40,4 +41,5 @@ export default function ConnectionsPage() {
     </div>
   )
 }
+
 

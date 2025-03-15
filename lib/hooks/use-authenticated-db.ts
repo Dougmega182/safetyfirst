@@ -1,3 +1,4 @@
+// safetyfirst/lib/hooks/use-authenticated-db.ts
 "use client"
 
 import { useState, useEffect } from "react"
@@ -15,8 +16,17 @@ export function useAuthenticatedDb<T = any>(query: string, params: any[] = [], d
       try {
         setLoading(true)
 
-        // Get the auth token
+        // Check if user exists and if user has the accessToken
+        if (!user || !user.getAuthJson) {
+          throw new Error("User or authJson is missing")
+        }
+
         const { accessToken } = await user.getAuthJson()
+
+        // Ensure accessToken is not null
+        if (!accessToken) {
+          throw new Error("No access token found")
+        }
 
         // Get the authenticated database connection
         const sql = getClientAuthenticatedNeonDb(accessToken)

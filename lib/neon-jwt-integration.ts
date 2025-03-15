@@ -1,3 +1,4 @@
+// safetyfirst/lib/neon-jwt-integration.ts
 /**
  * Neon Database and JWT Integration Guide
  *
@@ -53,4 +54,5 @@ export async function signJWT(payload: any, privateKey: any) {
  *
  * This would restrict users to only seeing their own data.
  */
+
 

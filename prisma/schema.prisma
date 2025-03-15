@@ -1,3 +1,4 @@
+// safetyfirst/prisma/schema.prisma
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["multiSchema"]
@@ -23,23 +24,32 @@ model Induction {
   content           Json
   jobSiteId         String
   requiresSignature Boolean               @default(true)
-  expiryDays        Int                   @default(365)
+  expiryDays        Int                   @db.Int(check: "expiry_days BETWEEN 1 AND 3650") @default(365)
   createdAt         DateTime              @default(now())
   updatedAt         DateTime              @updatedAt
   jobSite           JobSite               @relation(fields: [jobSiteId], references: [id])
   completions       InductionCompletion[]
-
   @@schema("public")
+
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@schema("public") // Ensure this matches your schema
 }
 
 model InductionCompletion {
   id          String      @id @default(cuid())
-  userId      String
   inductionId String
   completedAt DateTime    @default(now())
   signature   String?
-  user        UserDetails @relation(fields: [userId], references: [id])
-  induction   Induction   @relation(fields: [inductionId], references: [id]) // ✅ Now Induction exists above
+  induction   Induction   @relation(fields: [inductionId], references: [id])
+  user        UserDetails @relation(fields: [userId], references: [id]) // Assuming userId is stored here for completeness
 
   @@schema("public")
 }
@@ -123,6 +133,7 @@ model User {
   signedUpAt  DateTime? @default(now())
 
   details UserDetails? @relation("UserDetailsRelation")
+  Session Session[]
 
   @@map("users_sync")
   @@schema("neon_auth")
@@ -146,3 +157,15 @@ model UserDetails {
   @@map("user_details")
   @@schema("public")
 }
+
+model WeeklyReport {
+  id            String    @id @default(uuid())
+  weekStarting  DateTime
+  weekEnding    DateTime
+  reportData    Json
+  sentTo        String[]
+  sentAt        DateTime?
+
+  @@schema("public")
+}
+

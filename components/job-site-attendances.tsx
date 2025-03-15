@@ -1,3 +1,4 @@
+// safetyfirst/components/job-site-attendances.tsx
 "use client"
 
 import { useAuthenticatedDb } from "@/lib/hooks/use-authenticated-db"
@@ -173,4 +174,5 @@ export function JobSiteAttendances({ jobSiteId }: JobSiteAttendancesProps) {
     </Table>
   )
 }
+
 

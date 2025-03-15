@@ -1,3 +1,4 @@
+// safetyfirst/scripts/setup-neon-rls.ts
 import { getAdminNeonDb } from "../lib/db/neon-rls"
 
 async function setupNeonRLS() {
@@ -105,4 +106,5 @@ async function setupNeonRLS() {
 }
 
 setupNeonRLS()
+
 

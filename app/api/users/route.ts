@@ -1,3 +1,5 @@
+// safetyfirst/app/api/users/route.ts
+// /app/api/user/route.ts 
 import { NextResponse } from "next/server"
 import { stackServerApp } from "@/lib/stack-auth"
 
@@ -20,4 +22,5 @@ export async function GET() {
     return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 })
   }
 }
+
 

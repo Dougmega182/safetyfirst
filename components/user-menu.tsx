@@ -1,13 +1,16 @@
+// safetyfirst/components/user-menu.tsx
 "use client"
 
 import { UserButton } from "@stackframe/stack"
 import { useTheme } from "next-themes"
 import { useAuth } from "@/lib/use-auth"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export function UserMenu() {
   const { setTheme, theme } = useTheme()
   const { user } = useAuth()
+  const router = useRouter()
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark")
@@ -31,12 +34,16 @@ export function UserMenu() {
         {
           text: "Dashboard",
           icon: <span className="i-lucide-layout-dashboard" />,
-          onClick: () => (window.location.href = "/dashboard"),
+          onClick: () => {
+            router.push("/dashboard")
+          },
         },
         {
           text: "Job Sites",
           icon: <span className="i-lucide-map-pin" />,
-          onClick: () => (window.location.href = "/job-sites"),
+          onClick: () => {
+            router.push("/job-sites")
+          },
         },
       ]}
     />

@@ -1,5 +1,6 @@
+// safetyfirst/app/admin/dashboard/page.tsx
 "use client"
-
+// dashboard page.tsx
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/use-auth"
@@ -255,4 +256,5 @@ export default function DashboardPage() {
     </div>
   )
 }
+
 

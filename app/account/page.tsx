@@ -1,5 +1,6 @@
+// safetyfirst/app/account/page.tsx
 "use client"
-
+// acount page.tsx
 import { AccountSettings } from "@stackframe/stack"
 import { useAuth } from "@/lib/use-auth"
 import { useRouter } from "next/navigation"
@@ -29,20 +30,33 @@ export default function AccountPage() {
   return (
     <AccountSettings
       fullPage={true}
-      extraItems={[
-        {
-          title: "Job Sites",
-          iconName: "MapPin",
-          content: (
-            <div className="p-4">
-              <h2 className="text-2xl font-bold mb-4">Your Job Sites</h2>
-              <p>Manage your job site preferences and notifications.</p>
-            </div>
-          ),
-          subpath: "/job-sites",
-        },
-      ]}
+        extraItems={[
+          {
+            title: "Job Sites",
+            iconName: "MapPin",
+            id: "job-sites", // Use 'id' if required
+            content: (
+              <div className="p-4">
+                <h2 className="text-2xl font-bold mb-4">Your Job Sites</h2>
+                <p>Manage your job site preferences and notifications.</p>
+              </div>
+            ),
+          },
+          {
+            title: "Safety Certifications",
+            iconName: "Award",
+            id: "certifications",
+            content: (
+              <div className="p-4">
+                <h2 className="text-2xl font-bold mb-4">Safety Certifications</h2>
+                <p>Manage your safety certifications and training records.</p>
+              </div>
+            ),
+          },
+        ]}
+        
     />
   )
 }
+
 

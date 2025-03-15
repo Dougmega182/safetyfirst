@@ -1,3 +1,5 @@
+// safetyfirst/app/job-sites/page.tsx
+// /app/job-sites/page.tsx 
 import { getUserJobSites } from "@/lib/db/server-queries"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -64,4 +66,5 @@ export default async function JobSitesPage() {
     </div>
   )
 }
+
 

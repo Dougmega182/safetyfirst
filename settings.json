@@ -1,0 +1,17 @@
+// safetyfirst/settings.json
+// Place your settings in this file to overwrite the default settings
+{
+    "fileHeaderCommentHelper.languageConfigs": {
+        "language_typescript": {
+            "template": [
+                "/*",
+                " * Project: $(projectName)",
+                " * Path: $(currentFile)",
+                " */"
+            ]
+        }
+    }
+}
+
+
+

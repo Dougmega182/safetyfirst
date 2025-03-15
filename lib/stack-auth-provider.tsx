@@ -1,3 +1,4 @@
+// safetyfirst/lib/stack-auth-provider.tsx
 "use client"
 
 import { StackProvider } from "@stackframe/stack"
@@ -9,4 +10,5 @@ export function StackAuthProvider({ children }: { children: ReactNode }) {
 
   return <StackProvider app={stackClient}>{children}</StackProvider>
 }
+
 

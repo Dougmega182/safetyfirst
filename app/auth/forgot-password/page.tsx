@@ -1,3 +1,5 @@
+// safetyfirst/app/auth/forgot-password/page.tsx
+// /app/auth/forgot-password/page.tsx 
 "use client"
 
 import type React from "react"
@@ -127,4 +129,5 @@ export default function ForgotPasswordPage() {
     </div>
   )
 }
+
 

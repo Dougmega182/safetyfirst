@@ -1,3 +1,5 @@
+// safetyfirst/app/inductions/new/page.tsx
+// /app/inductions/new/page.tsx 
 "use client"
 
 import { useEffect, useState } from "react"
@@ -241,4 +243,5 @@ export default function NewInductionPage() {
     </div>
   )
 }
+
 

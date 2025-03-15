@@ -1,3 +1,5 @@
+// safetyfirst/components/connect-oauth.tsx
+// /components/connect-oauth.tsx
 "use client"
 
 import { useState } from "react"
@@ -19,9 +21,13 @@ export function ConnectOAuth({ provider, scopes, onConnect, onDisconnect }: Conn
   const [isConnecting, setIsConnecting] = useState(false)
   const [isDisconnecting, setIsDisconnecting] = useState(false)
 
+  // Handle the case when `user` might be null
+  if (!user) {
+    return <div>Loading...</div>
+  }
+
   // Try to get the connected account, but don't redirect automatically
   const connectedAccount = user.useConnectedAccount(provider, {
-    redirectIfMissing: false,
     scopes,
   })
 
@@ -32,7 +38,7 @@ export function ConnectOAuth({ provider, scopes, onConnect, onDisconnect }: Conn
     try {
       // This will redirect to the OAuth provider
       await user.getConnectedAccount(provider, {
-        or: "redirect",
+        or: "redirect", // Assuming this is correct for your library
         scopes,
       })
       // This code will only run after returning from the OAuth provider
@@ -49,7 +55,14 @@ export function ConnectOAuth({ provider, scopes, onConnect, onDisconnect }: Conn
 
     setIsDisconnecting(true)
     try {
-      await connectedAccount.disconnect()
+      // Manually clear session or token for disconnection
+      // Example: remove the access token from storage or clear user session
+      localStorage.removeItem(`oauth_token_${provider}`) // Customize this based on your storage strategy
+      sessionStorage.removeItem(`oauth_token_${provider}`) // If you're using sessionStorage
+
+      // Optionally: If there's an API that logs out the user from the OAuth provider, make a request here
+      // await user.logoutFromOAuth(provider); // Or use a method from your library
+
       if (onDisconnect) onDisconnect()
     } catch (error) {
       console.error(`Error disconnecting from ${provider}:`, error)
@@ -79,12 +92,13 @@ export function ConnectOAuth({ provider, scopes, onConnect, onDisconnect }: Conn
         <div className="text-sm">
           <p className="font-medium mb-2">Enables:</p>
           <ul className="list-disc pl-5 space-y-1">
-            {services.map((service, index) => (
-              <li key={index} className={isConnected ? "text-foreground" : "text-muted-foreground"}>
-                {service}
-              </li>
-            ))}
+          {services.map((service: string, index: number) => (
+           <li key={index} className={isConnected ? "text-foreground" : "text-muted-foreground"}>
+          {service}
+           </li>
+           ))}
           </ul>
+
         </div>
       </CardContent>
       <CardFooter>

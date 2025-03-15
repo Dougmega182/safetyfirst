@@ -1,3 +1,4 @@
+// safetyfirst/components/ui/resizable.tsx
 "use client"
 
 import { GripVertical } from "lucide-react"
@@ -43,3 +44,4 @@ const ResizableHandle = ({
 )
 
 export { ResizablePanelGroup, ResizablePanel, ResizableHandle }
+

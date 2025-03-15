@@ -1,3 +1,4 @@
+// safetyfirst/lib/db/client-component.tsx
 "use client"
 
 import { useAuth } from "@/lib/use-auth"
@@ -76,4 +77,5 @@ export function useSiteAttendance(siteId: string) {
     [siteId],
   )
 }
+
 

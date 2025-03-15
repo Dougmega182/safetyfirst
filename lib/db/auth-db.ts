@@ -1,3 +1,4 @@
+// safetyfirst/lib/db/auth-db.ts
 import { neon } from "@neondatabase/serverless"
 import { verify } from "jsonwebtoken"
 
@@ -33,4 +34,5 @@ export function getClientAuthDb(token: string) {
     throw new Error("Failed to create client database connection")
   }
 }
+
 

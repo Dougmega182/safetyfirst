@@ -1,3 +1,5 @@
+// safetyfirst/app/layout.tsx
+// /app/layout.tsx
 import type React from "react"
 import { StackProvider, StackTheme } from "@stackframe/stack";
 import { stackServerApp } from "../stack";
@@ -7,10 +9,10 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/lib/auth-provider"
 import { Toaster } from "@/components/ui/toaster"
-import Header from "@/components/header"
 import { SidebarNav } from "@/components/sidebar"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { MobileProviderWrapper } from "@/components/mobile-provider-wrapper"
+import { Header } from '@/components/header';
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -49,4 +51,5 @@ export default function RootLayout({
     </html>
   )
 }
+
 

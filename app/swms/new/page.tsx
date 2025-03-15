@@ -1,3 +1,5 @@
+// safetyfirst/app/swms/new/page.tsx
+// /app/swms/new/page.tsx 
 "use client"
 
 import { useEffect, useState } from "react"
@@ -259,4 +261,5 @@ export default function NewSwmsPage() {
     </div>
   )
 }
+
 

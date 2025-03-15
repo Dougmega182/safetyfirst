@@ -1,3 +1,4 @@
+// safetyfirst/lib/db.ts
 // This is a mock database service
 // In a real app, you would use Prisma, Drizzle, or another ORM to connect to your Railway database
 
@@ -53,4 +54,5 @@ export interface Hazard {
 
 // In a real app, you would implement actual database operations here
 // For this demo, we're just providing the interface definitions
+
 

@@ -1,3 +1,5 @@
+// safetyfirst/app/api/documents/google-drive/route.ts
+// app/api/cdocumentsron/google-drive/route.ts
 import { NextResponse } from "next/server"
 import { verifyAuthToken } from "@/lib/auth-server"
 import { stackServerApp } from "@/lib/stack-auth"
@@ -46,4 +48,5 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
+
 

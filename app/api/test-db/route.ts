@@ -1,3 +1,5 @@
+// safetyfirst/app/api/test-db/route.ts
+// app/api/test-db/route.ts
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
@@ -23,4 +25,5 @@ export async function GET() {
     )
   }
 }
+
 

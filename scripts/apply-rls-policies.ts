@@ -1,3 +1,4 @@
+// safetyfirst/scripts/apply-rls-policies.ts
 import { getAdminNeonDb } from "../lib/db/neon-rls"
 
 async function applyRLSPolicies() {
@@ -203,4 +204,5 @@ async function applyRLSPolicies() {
 }
 
 applyRLSPolicies()
+
 

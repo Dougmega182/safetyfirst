@@ -1,3 +1,4 @@
+// safetyfirst/components/mobile-provider-wrapper.tsx
 "use client"
 
 import dynamic from "next/dynamic"
@@ -12,4 +13,5 @@ const MobileProviderComponent = dynamic(
 export function MobileProviderWrapper({ children }: { children: React.ReactNode }) {
   return <MobileProviderComponent>{children}</MobileProviderComponent>
 }
+
 

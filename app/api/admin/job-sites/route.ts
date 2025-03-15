@@ -1,3 +1,5 @@
+// safetyfirst/app/api/admin/job-sites/route.ts
+// api/admin/job-sites routes.ts
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getUserFromRequest } from "@/lib/auth-utils"
@@ -5,7 +7,11 @@ import { getUserFromRequest } from "@/lib/auth-utils"
 export async function GET(request: Request) {
   try {
     const user = await getUserFromRequest(request)
-
+    
+    if (!user || !("role" in user) || (user.role !== "CEO" && user.role !== "ADMIN")) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
+    }
+    
     if (!user || (user.role !== "CEO" && user.role !== "ADMIN")) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
     }
@@ -76,7 +82,7 @@ export async function GET(request: Request) {
     })
 
     // Get all users for total count
-    const allUsers = await prisma.user.count({
+    const allUsers = await prisma.userDetails.count({
       where: {
         role: "USER", // Only count regular users, not admins or CEOs
       },
@@ -114,4 +120,5 @@ export async function GET(request: Request) {
     return NextResponse.json({ message: "An error occurred while fetching site data" }, { status: 500 })
   }
 }
+
 

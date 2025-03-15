@@ -1,3 +1,4 @@
+// safetyfirst/prisma/migrations/20250313032003_init/migration.sql
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('USER', 'ADMIN', 'CEO');
 
@@ -131,3 +132,4 @@ ALTER TABLE "SwmsSignoff" ADD CONSTRAINT "SwmsSignoff_userId_fkey" FOREIGN KEY (
 
 -- AddForeignKey
 ALTER TABLE "SwmsSignoff" ADD CONSTRAINT "SwmsSignoff_swmsId_fkey" FOREIGN KEY ("swmsId") REFERENCES "Swms"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+

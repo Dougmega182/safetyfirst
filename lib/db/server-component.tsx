@@ -1,5 +1,4 @@
-"use server"
-
+// safetyfirst/lib/db/server-component.tsx
 import { cookies } from "next/headers"
 import { getServerAuthDb } from "./auth-db"
 import { prisma } from "@/lib/prisma"
@@ -31,7 +30,7 @@ export async function getJobSites() {
   } catch (error) {
     console.error("Error fetching job sites with authenticated connection:", error)
 
-    // Fallback to Prisma if RLS is not set up yet
+    // Fallback to Prisma if RLS is not set up yet or the user schema doesn't support it
     console.log("Falling back to Prisma for job sites")
     return prisma.jobSite.findMany({
       orderBy: {
@@ -59,14 +58,12 @@ export async function getWorkers() {
   } catch (error) {
     console.error("Error fetching workers with authenticated connection:", error)
 
-    // Fallback to Prisma if RLS is not set up yet
+    // Fallback to Prisma if RLS is not set up yet or if we don't need to access role or name directly
     console.log("Falling back to Prisma for workers")
     return prisma.user.findMany({
-      where: {
-        role: "USER",
-      },
       orderBy: {
-        name: "asc",
+        // Avoiding "role" and "name" and just returning users without filtering by "role"
+        signedUpAt: "desc", // Use a field that exists in your Prisma model for ordering
       },
     })
   }
@@ -98,8 +95,8 @@ export async function getSiteAttendance(siteId: string) {
       include: {
         user: {
           select: {
-            name: true,
-            email: true,
+            user: true,
+            
           },
         },
       },

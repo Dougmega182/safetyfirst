@@ -1,3 +1,4 @@
+// safetyfirst/lib/auth-provider.tsx
 "use client"
 
 import type React from "react"
@@ -194,4 +195,5 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider value={{ user, loading, token, signIn, signUp, signOut }}>{children}</AuthContext.Provider>
   )
 }
+
 

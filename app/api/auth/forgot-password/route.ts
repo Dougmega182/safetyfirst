@@ -1,3 +1,5 @@
+// safetyfirst/app/api/auth/forgot-password/route.ts
+// app/api/auth/forgot-password/route.ts
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { sign } from "jsonwebtoken"
@@ -69,4 +71,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "An error occurred while processing your request" }, { status: 500 })
   }
 }
+
 

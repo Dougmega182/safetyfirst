@@ -1,6 +1,10 @@
+// safetyfirst/app/api/auth/register/route.ts
+// app/api/auth/register/route.ts
 import { NextResponse } from "next/server"
 import { cookies } from "next/headers"
-import { stackServer } from "@/lib/stack-auth"
+import { PrismaClient } from "@prisma/client"
+
+const prisma = new PrismaClient()
 
 export async function POST(request: Request) {
   try {
@@ -12,31 +16,33 @@ export async function POST(request: Request) {
     }
 
     // Check if user already exists
-    try {
-      const existingUser = await stackServer.getUserByEmail(email)
-      if (existingUser) {
-        return NextResponse.json({ message: "User with this email already exists" }, { status: 409 })
-      }
-    } catch (error) {
-      // If error is "user not found", continue with registration
-      // Otherwise, throw the error
-      if ((error as any).code !== "user_not_found") {
-        throw error
-      }
+    const existingUser = await prisma.user.findUnique({ where: { email } })
+    if (existingUser) {
+      return NextResponse.json({ message: "User with this email already exists" }, { status: 409 })
     }
 
-    // Create user with Stack Auth
-    const user = await stackServer.createUser({
-      name,
-      email,
-      password,
-      role: "USER",
+    // Create user and associated userDetails (role)
+    const user = await prisma.user.create({
+      data: {
+        email,
+        displayName: name,
+        details: {
+          create: {
+            role: "USER", // Setting the role in userDetails
+          },
+        },
+      },
     })
 
-    // Create session token
-    const session = await stackServer.createSession({
-      userId: user.id,
-      expiresIn: "7d",
+    // Create session token (you need to implement token generation logic)
+    const token = "generated-token" // Example: use a JWT library
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000) // Set expiration time for 1 hour
+    const session = await prisma.session.create({
+      data: {
+        userId: user.id,
+        token,
+        expiresAt,
+      },
     })
 
     // Set cookie with session token
@@ -54,8 +60,8 @@ export async function POST(request: Request) {
       user: {
         id: user.id,
         email: user.email,
-        name: user.name,
-        role: user.role || "USER",
+        displayName: user.displayName,
+        role: user.details?.role, // Access role from userDetails
       },
     })
   } catch (error) {

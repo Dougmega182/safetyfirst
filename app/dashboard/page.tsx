@@ -1,3 +1,5 @@
+// safetyfirst/app/dashboard/page.tsx
+// /app/dashboard/page.tsx 
 "use client"
 
 import { useEffect, useState } from "react"
@@ -70,24 +72,23 @@ export default function DashboardPage() {
   }
 
   // Get user role from Stack Auth if available, otherwise fall back to the existing role
-  const userRole = stackUser.clientReadOnlyMetadata?.role || user.role
+  const userRole = stackUser?.clientReadOnlyMetadata?.role || user.role
   const isAdmin = userRole === "admin" || userRole === "ceo" || user.role === "ADMIN" || user.role === "CEO"
 
   // Get preferred job site from Stack Auth if available
-  const preferredJobSite = stackUser.clientMetadata?.preferredJobSite
+  const preferredJobSite = stackUser?.clientMetadata?.preferredJobSite
 
   return (
     <div className="container py-10">
       <h1 className="mb-2 text-3xl font-bold">Dashboard</h1>
       <p className="mb-8 text-muted-foreground">
-        Welcome back, {stackUser.displayName || user.name}!
-        {stackUser.clientReadOnlyMetadata?.jobTitle && (
+        Welcome back, {stackUser?.displayName || user.name}!
+        {stackUser?.clientReadOnlyMetadata?.jobTitle && (
           <span className="ml-2 text-sm">
             ({stackUser.clientReadOnlyMetadata.jobTitle} at {stackUser.clientReadOnlyMetadata.companyName})
           </span>
         )}
       </p>
-
       <Tabs defaultValue="overview" className="space-y-8">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -273,4 +274,5 @@ export default function DashboardPage() {
     </div>
   )
 }
+
 

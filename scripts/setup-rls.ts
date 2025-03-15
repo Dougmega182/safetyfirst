@@ -1,3 +1,4 @@
+// safetyfirst/scripts/setup-rls.ts
 import { neon } from "@neondatabase/serverless"
 // Remove dotenv import and use process.env directly
 // import dotenv from "dotenv";
@@ -108,4 +109,5 @@ async function setupRLS() {
 }
 
 setupRLS()
+
 

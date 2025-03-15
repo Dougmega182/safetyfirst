@@ -1,3 +1,4 @@
+// safetyfirst/components/mobile-provider.tsx
 "use client"
 
 import type React from "react"
@@ -53,4 +54,5 @@ export function withMobile<P extends object>(Component: React.ComponentType<P & 
     return <Component {...props} isMobile={isMobile} />
   }
 }
+
 

@@ -1,6 +1,8 @@
+// /app/job-sites/[id]/page.tsx 
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/router"
 import { useParams } from "next/navigation"
 import { useAuth } from "@/lib/use-auth"
 import { Button } from "@/components/ui/button"
@@ -19,7 +21,7 @@ type JobSite = {
 
 export default function JobSitePage() {
   const { user } = useAuth()
-  const router = useParams()
+  const router = useRouter()
   const params = useParams()
   const { toast } = useToast()
   const [jobSite, setJobSite] = useState<JobSite | null>(null)

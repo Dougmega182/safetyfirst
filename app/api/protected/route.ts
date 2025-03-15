@@ -1,3 +1,4 @@
+// safetyfirst/app/api/protected/route.ts
 // app/api/protected/route.ts
 import { verifyAuthToken } from "@/lib/auth-server"
 
@@ -10,3 +11,4 @@ export async function GET() {
 
   // Handle authorized request
 }
+

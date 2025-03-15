@@ -1,20 +1,22 @@
-"use client"
+// safetyfirst/components/header.tsx
+// /components/header.tsx
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { HardHat, Menu } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { UserButton } from "@stackframe/stack"
-import { useAuth } from "@/lib/use-auth"
-import { Sidebar } from "./sidebar"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { HardHat, Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { UserButton } from "@stackframe/stack";
+import { useAuth } from "@/lib/use-auth";
+import Sidebar from "./sidebar";
 
 export function Header() {
-  const pathname = usePathname()
-  const { user, loading } = useAuth()
+  const pathname = usePathname();
+  const { user, loading } = useAuth();
 
-  const isAuthenticated = !loading && user
-  const isAdminRoute = pathname?.startsWith("/admin")
+  const isAuthenticated = !loading && user;
+  const isAdminRoute = pathname?.startsWith("/admin");
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -77,7 +79,10 @@ export function Header() {
                   {
                     text: "Dashboard",
                     icon: <HardHat className="h-4 w-4" />,
-                    onClick: () => (window.location.href = "/dashboard"),
+                    onClick: () => {
+                      window.location.href = "/dashboard";
+                      return Promise.resolve();
+                    },
                   },
                 ]}
               />
@@ -109,6 +114,6 @@ export function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }
 

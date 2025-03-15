@@ -1,3 +1,4 @@
+// safetyfirst/components/sidebar.tsx
 "use client"
 
 import type React from "react"
@@ -5,7 +6,7 @@ import type React from "react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { useAuth } from "@/lib/use-auth"
-import { BarChart3, ClipboardList, FileText, HardHat, LayoutDashboard, MapPin, Settings, Users } from "lucide-react"
+import { BarChart3, ClipboardList, FileText, HardHat, LayoutDashboard, MapPin, Settings, Users, } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -16,6 +17,7 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar"
+
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -78,7 +80,7 @@ export function SidebarNav({ className, ...props }: SidebarNavProps) {
       <SidebarHeader className="flex items-center">
         <Link href="/" className="flex items-center gap-2 px-2">
           <HardHat className="h-6 w-6 text-blue-600" />
-          <span className="text-xl font-bold">SafetyFirst</span>
+          <span className="text-xl font-bold">Safety Pass</span>
         </Link>
       </SidebarHeader>
       <SidebarSeparator />
@@ -129,4 +131,6 @@ export function SidebarNav({ className, ...props }: SidebarNavProps) {
     </Sidebar>
   )
 }
+
+export default Sidebar; 
 

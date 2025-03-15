@@ -1,3 +1,5 @@
+// safetyfirst/app/api/cron/weekly-report/route.ts
+// app/api/cron/weekly-report/route.ts
 import { NextResponse } from "next/server"
 import { generateWeeklyReport } from "@/lib/weekly-report"
 
@@ -34,4 +36,5 @@ export async function GET(request: Request) {
     return NextResponse.json({ message: "An error occurred in the weekly report cron job" }, { status: 500 })
   }
 }
+
 

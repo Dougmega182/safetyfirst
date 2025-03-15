@@ -1,3 +1,5 @@
+// safetyfirst/app/api/user/profile/route.ts
+// app/api/user/profile/route.ts
 import { NextResponse } from "next/server"
 import { verifyAuthToken } from "@/lib/auth-server"
 import { stackServerApp } from "@/lib/stack-auth"
@@ -33,4 +35,5 @@ export async function GET() {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
+
 

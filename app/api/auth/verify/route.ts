@@ -1,3 +1,5 @@
+// safetyfirst/app/api/auth/verify/route.ts
+// app/api/auth/verift/route.ts
 import { NextResponse } from "next/server"
 import * as jose from "jose"
 
@@ -40,4 +42,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid token", authenticated: false }, { status: 401 })
   }
 }
+
 

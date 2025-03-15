@@ -1,3 +1,5 @@
+// safetyfirst/app/auth/stack-register/page.tsx
+// /app/auth/stack-register/page.tsx 
 "use client"
 
 import { SignUp } from "@stackframe/stack"
@@ -35,4 +37,5 @@ export default function StackRegisterPage() {
     </div>
   )
 }
+
 

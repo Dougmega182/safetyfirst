@@ -1,3 +1,4 @@
+// safetyfirst/Dockerfile
 # Stage 1: Dependencies
 FROM node:18-alpine AS deps
 WORKDIR /app
@@ -31,3 +32,4 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD curl --fail http://localhost:3000/ || exit 1
 CMD ["node", "standalone/server.js"]
+

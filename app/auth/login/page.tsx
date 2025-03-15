@@ -1,3 +1,5 @@
+// safetyfirst/app/auth/login/page.tsx
+// /app/auth/login/page.tsx 
 "use client"
 
 import { SignIn } from "@stackframe/stack"
@@ -29,4 +31,5 @@ export default function LoginPage() {
     </div>
   )
 }
+
 

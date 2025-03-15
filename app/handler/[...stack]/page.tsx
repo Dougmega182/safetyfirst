@@ -1,3 +1,4 @@
+// /app/handler/[...stack]/page.tsx 
 import { StackHandler } from "@stackframe/stack";
 import { stackServerApp } from "../../../stack";
 

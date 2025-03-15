@@ -1,100 +1,151 @@
-import { stackServerApp } from "@/lib/stack-auth"
-import type { User } from "@stackframe/stack"
+// safetyfirst/lib/user-metadata.ts
+import { stackServerApp } from "@/lib/stack-auth";
+import { User, UserDetails, Role } from "@prisma/client";
+import prisma from "@/lib/prisma";
+import { CurrentUser } from "@stackframe/stack"; // Import the CurrentUser type
 
-// Types for our custom user metadata
+// Types for custom user metadata
 export interface UserClientMetadata {
-  preferredJobSite?: string
+  preferredJobSite?: string;
   notificationPreferences?: {
-    email: boolean
-    sms: boolean
-    push: boolean
-  }
-  onboarded?: boolean
-  lastActiveAt?: string
-}
-
-export interface UserServerMetadata {
-  verifiedCertifications?: string[]
-  safetyTrainingCompleted?: boolean
-  adminNotes?: string
-  companyId?: string
-  onboardingCompleted?: boolean
+    email: boolean;
+    sms: boolean;
+    push: boolean;
+  };
+  onboarded?: boolean;
+  lastActiveAt?: string;
 }
 
 export interface UserClientReadOnlyMetadata {
-  role: "worker" | "supervisor" | "admin" | "ceo"
-  certificationLevel: "basic" | "intermediate" | "advanced"
-  accountStatus: "active" | "suspended" | "pending"
-  companyName?: string
-  jobTitle?: string
+  role: Role;
+  accountStatus: "active" | "suspended" | "pending";
+  companyName?: string;
+  jobTitle?: string;
 }
 
-// Client-side functions for updating user metadata
-export async function updateUserClientMetadata(user: User, data: Partial<UserClientMetadata>) {
-  return await user.update({
-    clientMetadata: {
-      ...user.clientMetadata,
-      ...data,
+// Update user details in Prisma database
+export async function updateUserDetails(userId: string, data: {
+  company?: string;
+  position?: string;
+  phone?: string;
+  role?: Role;
+}) {
+  return await prisma.userDetails.update({
+    where: { userId },
+    data
+  });
+}
+
+// Client-side function for updating user client metadata in Stack
+export async function updateUserClientMetadata(
+  user: CurrentUser | null,
+  data: Partial<UserClientMetadata>
+) {
+  if (!user) throw new Error("User not found");
+
+  // Use an API route to update Stack metadata
+  const response = await fetch(`/api/user/client-metadata`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
     },
-  })
+    body: JSON.stringify({
+      userId: user.id,
+      metadata: data
+    }),
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to update user metadata');
+  }
+  
+  return await response.json();
 }
 
-// Server-side functions for updating user metadata
-export async function updateUserServerMetadata(userId: string, data: Partial<UserServerMetadata>) {
-  const user = await stackServerApp.getUser(userId)
-  return await user.update({
-    serverMetadata: {
-      ...user.serverMetadata,
-      ...data,
-    },
-  })
-}
-
-export async function updateUserClientReadOnlyMetadata(userId: string, data: Partial<UserClientReadOnlyMetadata>) {
-  const user = await stackServerApp.getUser(userId)
-  return await user.update({
-    clientReadOnlyMetadata: {
-      ...user.clientReadOnlyMetadata,
-      ...data,
-    },
-  })
-}
-
-// Function to set initial metadata for a new user
-export async function initializeUserMetadata(
+// Create or update a user's profile with all details
+export async function initializeUserProfile(
   userId: string,
   userData: {
-    role: UserClientReadOnlyMetadata["role"]
-    companyName?: string
-    jobTitle?: string
+    role?: Role;
+    company?: string;
+    position?: string;
+    phone?: string;
   },
+  clientMetadata?: Partial<UserClientMetadata>,
+  clientReadOnlyMetadata?: Partial<UserClientReadOnlyMetadata>
 ) {
-  const user = await stackServerApp.getUser(userId)
-
-  await user.update({
-    clientMetadata: {
-      onboarded: false,
-      notificationPreferences: {
-        email: true,
-        sms: false,
-        push: true,
+  // First, create or update the UserDetails record in Prisma
+  const userDetails = await prisma.userDetails.upsert({
+    where: { userId },
+    update: {
+      role: userData.role || Role.USER,
+      company: userData.company,
+      position: userData.position,
+      phone: userData.phone,
+    },
+    create: {
+      userId,
+      role: userData.role || Role.USER,
+      company: userData.company,
+      position: userData.position,
+      phone: userData.phone,
+    },
+  });
+  
+  // Then update the Stack user metadata via API
+  const response = await fetch(`/api/user/initialize-profile`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      userId,
+      clientMetadata: clientMetadata || {
+        onboarded: false,
+        notificationPreferences: {
+          email: true,
+          sms: false,
+          push: true,
+        },
+        lastActiveAt: new Date().toISOString(),
       },
-      lastActiveAt: new Date().toISOString(),
-    },
-    serverMetadata: {
-      verifiedCertifications: [],
-      safetyTrainingCompleted: false,
-      onboardingCompleted: false,
-    },
-    clientReadOnlyMetadata: {
-      role: userData.role,
-      certificationLevel: "basic",
-      accountStatus: "pending",
-      companyName: userData.companyName,
-      jobTitle: userData.jobTitle,
-    },
-  })
-
-  return user
+      clientReadOnlyMetadata: clientReadOnlyMetadata || {
+        role: userData.role || Role.USER,
+        accountStatus: "pending",
+        companyName: userData.company,
+        jobTitle: userData.position,
+      }
+    }),
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to initialize user profile');
+  }
+  
+  return userDetails;
 }
 
+// Update Prisma and Stack metadata in one function
+export async function updateUserProfile(
+  user: CurrentUser | null,
+  prismaData: {
+    company?: string;
+    position?: string;
+    phone?: string;
+    role?: Role;
+  },
+  stackData: Partial<UserClientMetadata>
+) {
+  if (!user) throw new Error("User not found");
+  
+  // Update Prisma database
+  const userDetails = await prisma.userDetails.update({
+    where: { userId: user.id },
+    data: prismaData
+  });
+  
+  // Update Stack metadata
+  await updateUserClientMetadata(user, stackData);
+  
+  return userDetails;
+}

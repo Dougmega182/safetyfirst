@@ -1,3 +1,4 @@
+// safetyfirst/scripts/setup-db.ts
 import { execSync } from "child_process"
 
 async function setupDatabase() {
@@ -24,4 +25,5 @@ async function setupDatabase() {
 }
 
 setupDatabase()
+
 

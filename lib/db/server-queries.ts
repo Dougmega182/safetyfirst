@@ -1,3 +1,4 @@
+// safetyfirst/lib/db/server-queries.ts
 import { getAuthenticatedNeonDb } from "./neon-rls"
 
 // Function to get job sites for the current user
@@ -144,4 +145,5 @@ export async function getAllUsers() {
     throw error
   }
 }
+
 

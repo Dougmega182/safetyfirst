@@ -1,3 +1,5 @@
+// safetyfirst/app/page.tsx
+// /app/page.tsx
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { LogIn } from "lucide-react"
@@ -49,3 +51,4 @@ export default function Home() {
     </div>
   )
 }
+

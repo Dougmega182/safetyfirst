@@ -1,3 +1,5 @@
+// safetyfirst/app/auth/debug/page.tsx
+// /app/auth/debug/page.tsx 
 "use client"
 
 import { useState, useEffect } from "react"
@@ -104,4 +106,5 @@ export default function DebugPage() {
     </div>
   )
 }
+
 

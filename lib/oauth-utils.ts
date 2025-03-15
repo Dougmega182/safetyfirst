@@ -1,56 +1,45 @@
-import { stackServerApp } from "./stack-auth"
+// safetyfirst/lib/oauth-utils.ts
+// oauth-utils.ts
 
-// Define the OAuth providers we support
-export type OAuthProvider = "google" | "microsoft" | "github"
+import { useUser } from '@stackframe/stack'; // Importing Stack's user hook
 
-// Define the scopes we need for each provider
-export const providerScopes: Record<OAuthProvider, string[]> = {
-  google: [
-    "https://www.googleapis.com/auth/userinfo.email",
-    "https://www.googleapis.com/auth/userinfo.profile",
-    "https://www.googleapis.com/auth/drive.file", // For document storage
-    "https://www.googleapis.com/auth/calendar", // For scheduling
-  ],
-  microsoft: ["user.read", "files.readwrite", "calendars.readwrite"],
-  github: ["read:user", "user:email", "repo"],
+// Define provider type
+export type OAuthProvider = 'google' | 'microsoft' | 'github';
+
+// Helper function to retrieve OAuth scopes for a provider
+export function getOAuthScopes(provider: OAuthProvider): string[] {
+  const oauthScopesOnSignIn: Record<OAuthProvider, string[]> = {
+    google: ['https://www.googleapis.com/auth/drive.readonly'],
+    microsoft: ['https://graph.microsoft.com/.default'],
+    github: ['repo', 'user'],
+    
+  };
+
+  return oauthScopesOnSignIn[provider] || [];
 }
-
-// Configure Stack Auth to request these scopes during sign-in
-export function configureOAuthScopes() {
-  stackServerApp.oauthScopesOnSignIn = {
-    google: providerScopes.google,
-    microsoft: providerScopes.microsoft,
-    github: providerScopes.github,
-  }
-}
-
-// Helper function to get a user-friendly provider name
 export function getProviderName(provider: OAuthProvider): string {
   const names: Record<OAuthProvider, string> = {
     google: "Google",
-    microsoft: "Microsoft",
     github: "GitHub",
-  }
-  return names[provider] || provider
+    microsoft: "Microsoft",
+  };
+  return names[provider] || "Unknown";
 }
 
-// Helper function to get provider icon
-export function getProviderIcon(provider: OAuthProvider): string {
-  const icons: Record<OAuthProvider, string> = {
-    google: "/icons/google.svg",
-    microsoft: "/icons/microsoft.svg",
-    github: "/icons/github.svg",
-  }
-  return icons[provider] || ""
-}
-
-// Helper to determine what services are available with each provider
 export function getProviderServices(provider: OAuthProvider): string[] {
   const services: Record<OAuthProvider, string[]> = {
-    google: ["Document Storage", "Calendar Integration", "Email Notifications"],
-    microsoft: ["OneDrive Integration", "Outlook Calendar", "Teams Notifications"],
-    github: ["Code Repository Access", "Issue Tracking"],
-  }
-  return services[provider] || []
+    google: ["Google Drive", "Gmail", "YouTube"],
+    github: ["Repositories", "Issues", "Pull Requests"],
+    microsoft: ["OneDrive", "Outlook", "Teams"],
+  };
+  return services[provider] || [];
+}
+
+// Hook to handle connected OAuth accounts
+export function useConnectedAccount(provider: OAuthProvider, scopes: string[] = []): any {
+  const user = useUser({ or: 'redirect' });
+  const account = user.useConnectedAccount(provider, { or: 'redirect', scopes });
+
+  return account;
 }
 

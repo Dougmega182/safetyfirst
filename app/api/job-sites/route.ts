@@ -1,3 +1,5 @@
+// safetyfirst/app/api/job-sites/route.ts
+// app/api/job-sites/route.ts
 import { NextResponse } from "next/server"
 import { getAuthenticatedNeonDb } from "@/lib/db/neon-rls"
 import { verifyAuthToken } from "@/lib/auth-server"
@@ -86,4 +88,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "An error occurred while creating the job site" }, { status: 500 })
   }
 }
+
 

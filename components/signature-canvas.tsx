@@ -1,3 +1,4 @@
+// safetyfirst/components/signature-canvas.tsx
 "use client"
 
 import type React from "react"
@@ -167,4 +168,5 @@ export default function SignatureCanvas({ onSave }: SignatureCanvasProps) {
     </div>
   )
 }
+
 

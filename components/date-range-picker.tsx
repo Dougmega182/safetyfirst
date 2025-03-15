@@ -1,3 +1,5 @@
+// safetyfirst/components/date-range-picker.tsx
+// /components/date-range-picker.tsx
 "use client"
 import { format } from "date-fns"
 import { CalendarIcon } from "lucide-react"
@@ -40,12 +42,13 @@ export function DateRangePicker({ date, setDate, className }: DateRangePickerPro
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
-            initialFocus
+            autoFocus
             mode="range"
             defaultMonth={date?.from}
             selected={date}
             onSelect={setDate}
             numberOfMonths={2}
+            required={true} // Add the required prop to fix the error
           />
         </PopoverContent>
       </Popover>

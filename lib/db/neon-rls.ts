@@ -1,21 +1,41 @@
+// safetyfirst/lib/db/neon-rls.ts
 import { neon } from "@neondatabase/serverless"
 import { stackServerApp } from "@/lib/stack-auth"
 
-// Function to get an authenticated database connection for server components
+
+export function getClientAuthenticatedNeonDb(accessToken: string) {
+  const dbUrl = process.env.DATABASE_AUTHENTICATED_URL
+
+  if (!dbUrl) {
+    throw new Error("Database URL is not defined in the environment variables")
+  }
+
+  // Return the authenticated connection for the client
+  return neon(dbUrl, {
+    authToken: async () => accessToken,
+  })
+}
+
+// Function to get the authenticated database connection for server components
 export async function getAuthenticatedNeonDb(userId?: string) {
   try {
-    // If userId is provided, get that specific user
-    // Otherwise, get the current user from the session
-    const user = userId ? await stackServerApp.getUser(userId) : await stackServerApp.getUser()
+    // Step 1: Fetch the user based on the provided userId or the current session
+    const user = userId 
+      ? await stackServerApp.getUser(userId) 
+      : await stackServerApp.getUser()
 
     if (!user) {
       throw new Error("No authenticated user found")
     }
 
-    // Get the JWT token for the user
-    const { accessToken } = await user.getAuthJson()
+    // Step 2: Retrieve the access token from the user or session
+    const accessToken = await getAccessToken(user)
 
-    // Create and return the authenticated database connection
+    if (!accessToken) {
+      throw new Error("No access token found")
+    }
+
+    // Step 3: Create and return the authenticated Neon DB connection using the access token
     return neon(process.env.DATABASE_AUTHENTICATED_URL!, {
       authToken: async () => accessToken,
     })
@@ -25,19 +45,32 @@ export async function getAuthenticatedNeonDb(userId?: string) {
   }
 }
 
-// Function to get an authenticated database connection for client components
-export function getClientAuthenticatedNeonDb(accessToken: string) {
-  if (!accessToken) {
-    throw new Error("No access token provided")
+// Helper function to extract the access token from the user
+async function getAccessToken(user: any) {
+  // Option 1: Check if the accessToken exists directly in the user object (adjust based on your implementation)
+  if (user?.accessToken) {
+    return user.accessToken
   }
 
-  return neon(process.env.NEXT_PUBLIC_DATABASE_AUTHENTICATED_URL!, {
-    authToken: async () => accessToken,
-  })
+  // Option 2: If accessToken is stored in the session or another property
+  // Make sure to adjust this based on how your user data is structured
+  if (user?.session?.accessToken) {
+    return user.session.accessToken
+  }
+
+  // Option 3: If the token is generated through a different method, implement it here
+  // For example, if you need to request the token from an API or refresh token mechanism
+  const token = await getTokenFromApi(user.id)
+  return token
 }
 
-// Function to get an admin database connection (for migrations, etc.)
-export function getAdminNeonDb() {
-  return neon(process.env.DATABASE_URL!)
+// Placeholder function for token retrieval from an external API
+async function getTokenFromApi(userId: string) {
+  // Logic to request the token from an API or another service
+  // This will depend on how your authentication service is set up
+  // Example:
+  const response = await fetch(`/api/get-token?userId=${userId}`)
+  const data = await response.json()
+  return data.accessToken
 }
 

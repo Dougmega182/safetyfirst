@@ -1,44 +1,32 @@
+// safetyfirst/app/api/auth/session/route.ts
+// app/api/auth/session/route.ts
 import { NextResponse } from "next/server"
 import { cookies } from "next/headers"
-import { stackServer } from "@/lib/stack-auth"
+import { stackServerApp } from "@/lib/stack-auth"
 
 export async function GET() {
   try {
-    const cookieStore = await cookies()
+    // Debug available methods
+    console.log("Available methods on stackServerApp:", 
+      Object.getOwnPropertyNames(Object.getPrototypeOf(stackServerApp))
+        .filter(method => typeof stackServerApp[method as keyof typeof stackServerApp] === 'function')
+    );
+    
+    const cookieStore = cookies()
     const sessionToken = cookieStore.get("auth-session")?.value
 
     if (!sessionToken) {
       return NextResponse.json({ user: null })
     }
 
-    // Verify the session with Stack Auth
-    const session = await stackServer.verifySession({
-      token: sessionToken,
-    })
-
-    if (!session || !session.userId) {
-      return NextResponse.json({ user: null })
-    }
-
-    // Get the user data
-    const user = await stackServer.getUser(session.userId)
-
-    if (!user) {
-      return NextResponse.json({ user: null })
-    }
-
-    // Return user data
-    return NextResponse.json({
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role || "USER",
-      },
-    })
+    // Return the available methods for debugging
+    return NextResponse.json({ 
+      availableMethods: Object.getOwnPropertyNames(Object.getPrototypeOf(stackServerApp))
+        .filter(method => typeof stackServerApp[method as keyof typeof stackServerApp] === 'function'),
+      user: null 
+    });
   } catch (error) {
-    console.error("Session error:", error)
+    console.error("Debug error:", error)
     return NextResponse.json({ user: null }, { status: 500 })
   }
 }
-

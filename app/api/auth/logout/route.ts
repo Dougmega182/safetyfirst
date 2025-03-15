@@ -1,6 +1,9 @@
+// safetyfirst/app/api/auth/logout/route.ts
+// app/api/auth/logout/route.ts
 import { NextResponse } from "next/server"
 import { cookies } from "next/headers"
-import { stackServer } from "@/lib/stack-auth"
+import { stackServerApp } from "@/lib/stack-auth";
+
 
 export async function POST(request: Request) {
   try {
@@ -9,7 +12,7 @@ export async function POST(request: Request) {
 
     if (sessionToken) {
       // Invalidate the session with Stack Auth
-      await stackServer.invalidateSession({ token: sessionToken })
+      await stackServerApp.redirectToAfterSignOut({  })
     }
 
     // Clear the session cookie
@@ -21,4 +24,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "An error occurred during logout" }, { status: 500 })
   }
 }
+
 

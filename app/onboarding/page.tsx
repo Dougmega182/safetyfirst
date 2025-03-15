@@ -1,3 +1,5 @@
+// safetyfirst/app/onboarding/page.tsx
+// /app/onboarding/page.tsx 
 "use client"
 
 import { useState } from "react"
@@ -17,13 +19,13 @@ export default function OnboardingPage() {
   const router = useRouter()
   const [step, setStep] = useState(1)
   const [formData, setFormData] = useState({
-    jobTitle: user.clientReadOnlyMetadata?.jobTitle || "",
-    company: user.clientReadOnlyMetadata?.companyName || "",
-    preferredJobSite: user.clientMetadata?.preferredJobSite || "",
+    jobTitle: user?.clientReadOnlyMetadata?.jobTitle || "",
+    company: user?.clientReadOnlyMetadata?.companyName || "",
+    preferredJobSite: user?.clientMetadata?.preferredJobSite || "",
     notifications: {
-      email: user.clientMetadata?.notificationPreferences?.email !== false,
-      sms: user.clientMetadata?.notificationPreferences?.sms === true,
-      push: user.clientMetadata?.notificationPreferences?.push !== false,
+      email: user?.clientMetadata?.notificationPreferences?.email !== false,
+      sms: user?.clientMetadata?.notificationPreferences?.sms === true,
+      push: user?.clientMetadata?.notificationPreferences?.push !== false,
     },
     safetyTraining: {
       generalInduction: false,
@@ -50,7 +52,12 @@ export default function OnboardingPage() {
   }
 
   const handleSubmit = async () => {
-    setIsSubmitting(true)
+    if (!user) {
+      // If user is null, redirect or show error message
+      return;
+    }
+  
+    setIsSubmitting(true);
     try {
       // Update client metadata
       await updateUserClientMetadata(user, {
@@ -62,8 +69,8 @@ export default function OnboardingPage() {
         },
         onboarded: true,
         lastActiveAt: new Date().toISOString(),
-      })
-
+      });
+  
       // Call server API to update server metadata
       await fetch("/api/user/onboarding", {
         method: "POST",
@@ -75,22 +82,27 @@ export default function OnboardingPage() {
           jobTitle: formData.jobTitle,
           company: formData.company,
         }),
-      })
-
+      });
+  
       // Redirect to dashboard
-      router.push("/dashboard")
+      router.push("/dashboard");
     } catch (error) {
-      console.error("Error completing onboarding:", error)
+      console.error("Error completing onboarding:", error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
+  }
+
+  if (!user) {
+    // Show a loading state or handle the case where the user is not available
+    return <div>Loading...</div>
   }
 
   return (
     <div className="container flex min-h-screen flex-col items-center justify-center py-10">
       <div className="mb-8 flex items-center">
         <HardHat className="h-10 w-10 text-blue-600 mr-3" />
-        <h1 className="text-3xl font-bold">SafetyFirst Onboarding</h1>
+        <h1 className="text-3xl font-bold">Safety Pass Onboarding</h1>
       </div>
 
       <Card className="w-full max-w-md">
