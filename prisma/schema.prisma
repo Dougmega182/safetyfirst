@@ -24,7 +24,7 @@ model Induction {
   content           Json
   jobSiteId         String
   requiresSignature Boolean               @default(true)
-  expiryDays        Int                   @db.Int(check: "expiry_days BETWEEN 1 AND 3650") @default(365)
+  expiryDays        Int                   @default(365)
   createdAt         DateTime              @default(now())
   updatedAt         DateTime              @updatedAt
   jobSite           JobSite               @relation(fields: [jobSiteId], references: [id])
@@ -46,6 +46,7 @@ model Session {
 model InductionCompletion {
   id          String      @id @default(cuid())
   inductionId String
+  userId      String 
   completedAt DateTime    @default(now())
   signature   String?
   induction   Induction   @relation(fields: [inductionId], references: [id])
