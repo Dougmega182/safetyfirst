@@ -1,61 +1,179 @@
-// safetyfirst/app/dashboard/page.tsx
-// /app/dashboard/page.tsx 
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { useAuth } from "@/lib/use-auth"
-import { useRequireOnboarding } from "@/lib/onboarding"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { ClipboardList, FileText, Users, BarChart3, QrCode, MapPin } from "lucide-react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useUser } from "@stackframe/stack"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/use-auth";
+import { useRequireOnboarding } from "@/lib/onboarding";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ClipboardList, FileText, Users, BarChart3, QrCode, MapPin, LucideIcon } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useUser } from "@stackframe/stack";
+
 
 type JobSite = {
-  id: string
-  name: string
-  address: string
-  activeWorkers: number
+  id: string;
+  name: string;
+  address: string;
+  activeWorkers: number;
+};
+
+// Type definitions for component props
+interface DashboardStatProps {
+  title: string;
+  value: number | string;
+  icon: LucideIcon;
+  description: string;
 }
 
+interface QuickActionProps {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+  link: string;
+}
+
+interface JobSitesListProps {
+  sites: JobSite[];
+}
+
+// Define types for user metadata
+interface ClientReadOnlyMetadata {
+  role?: string;
+  jobTitle?: string;
+  companyName?: string;
+  [key: string]: unknown;
+}
+
+interface StackUser {
+  displayName?: string;
+  clientMetadata?: Record<string, unknown>;
+  clientReadOnlyMetadata?: ClientReadOnlyMetadata;
+}
+
+// Admin Dashboard Component
+const AdminDashboard = () => (
+  <div>
+    <h2 className="text-2xl font-bold mb-4">Admin Dashboard</h2>
+    <div className="grid gap-6 md:grid-cols-2">
+      <Card>
+        <CardHeader>
+          <CardTitle>User Management</CardTitle>
+          <CardDescription>Manage users and permissions</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button asChild className="w-full">
+            <Link href="/admin/users">Manage Users</Link>
+          </Button>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Site Management</CardTitle>
+          <CardDescription>Create and manage job sites</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button asChild className="w-full">
+            <Link href="/admin/sites">Manage Sites</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  </div>
+);
+
+// Dashboard Stats Card Component
+const DashboardStat = ({ title, value, icon: Icon, description }: DashboardStatProps) => (
+  <Card>
+    <CardHeader className="flex flex-row items-center justify-between pb-2">
+      <CardTitle className="text-sm font-medium">{title}</CardTitle>
+      <Icon className="h-4 w-4 text-muted-foreground" />
+    </CardHeader>
+    <CardContent>
+      <div className="text-2xl font-bold">{value}</div>
+      <p className="text-xs text-muted-foreground">{description}</p>
+    </CardContent>
+  </Card>
+);
+
+// Quick Action Card Component
+const QuickAction = ({ title, description, link }: QuickActionProps) => (
+  <Card>
+    <CardHeader>
+      <CardTitle>{title}</CardTitle>
+      <CardDescription>{description}</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <Button asChild className="w-full">
+        <Link href={link}>Go</Link>
+      </Button>
+    </CardContent>
+  </Card>
+);
+
+// Job Sites List Component
+const JobSitesList = ({ sites }: JobSitesListProps) => (
+  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    {sites.length > 0 ? (
+      sites.map((site) => (
+        <Card key={site.id}>
+          <CardHeader>
+            <CardTitle>{site.name}</CardTitle>
+            <CardDescription>{site.address}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center">
+              <Users className="h-5 w-5 mr-2 text-muted-foreground" />
+              <span>{site.activeWorkers} active workers</span>
+            </div>
+          </CardContent>
+        </Card>
+      ))
+    ) : (
+      <p className="text-muted-foreground">No job sites found</p>
+    )}
+  </div>
+);
+
 export default function DashboardPage() {
-  // Check if user is onboarded
-  const { isOnboarded } = useRequireOnboarding()
+  useRequireOnboarding(); // Call the hook but don't destructure any unused variables
+  
+  const { user, loading } = useAuth();
+  const stackUser = useUser() as StackUser | null;
+  const router = useRouter();
+  const [recentSites, setRecentSites] = useState<JobSite[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const { user, loading } = useAuth()
-  const stackUser = useUser()
-  const router = useRouter()
-  const [recentSites, setRecentSites] = useState<JobSite[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-
+  // Prevent unauthorized access
   useEffect(() => {
-    if (!loading && !user) {
-      router.push("/auth/login")
+    if (!loading && user === null) {
+      router.push("/auth/login");
     }
-  }, [user, loading, router])
+  }, [user, loading, router]);
 
+  // Fetch recent job sites
   useEffect(() => {
     const fetchRecentSites = async () => {
       try {
-        const response = await fetch("/api/job-sites?limit=4")
+        const response = await fetch("/api/job-sites?limit=4");
         if (response.ok) {
-          const data = await response.json()
-          setRecentSites(data.jobSites)
+          const data = await response.json();
+          setRecentSites(data.jobSites);
         }
       } catch (error) {
-        console.error("Error fetching recent sites:", error)
+        console.error("Error fetching recent sites:", error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
     if (user) {
-      fetchRecentSites()
+      fetchRecentSites();
     }
-  }, [user])
+  }, [user]);
 
+  // Handle loading state
   if (loading || isLoading) {
     return (
       <div className="container flex h-[calc(100vh-4rem)] items-center justify-center">
@@ -64,31 +182,36 @@ export default function DashboardPage() {
           <p className="text-sm text-muted-foreground">Please wait while we load your dashboard</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!user) {
-    return null
+    return null;
   }
 
-  // Get user role from Stack Auth if available, otherwise fall back to the existing role
-  const userRole = stackUser?.clientReadOnlyMetadata?.role || user.role
-  const isAdmin = userRole === "admin" || userRole === "ceo" || user.role === "ADMIN" || user.role === "CEO"
+  // Extract user metadata safely - only get what we need
+  const clientReadOnlyMetadata = stackUser?.clientReadOnlyMetadata || {};
 
-  // Get preferred job site from Stack Auth if available
-  const preferredJobSite = stackUser?.clientMetadata?.preferredJobSite
+  // Determine user role
+  const userRole = clientReadOnlyMetadata?.role || user?.role || "USER";
+  const isAdmin = ["ADMIN", "CEO"].includes(userRole?.toUpperCase() || "");
+
+  // Get job title and company name
+  const jobTitle = clientReadOnlyMetadata?.jobTitle || "No Title";
+  const companyName = clientReadOnlyMetadata?.companyName || "No Company";
 
   return (
     <div className="container py-10">
       <h1 className="mb-2 text-3xl font-bold">Dashboard</h1>
       <p className="mb-8 text-muted-foreground">
         Welcome back, {stackUser?.displayName || user.name}!
-        {stackUser?.clientReadOnlyMetadata?.jobTitle && (
+        {jobTitle !== "No Title" && (
           <span className="ml-2 text-sm">
-            ({stackUser.clientReadOnlyMetadata.jobTitle} at {stackUser.clientReadOnlyMetadata.companyName})
+            ({jobTitle} at {companyName})
           </span>
         )}
       </p>
+
       <Tabs defaultValue="overview" className="space-y-8">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -96,91 +219,24 @@ export default function DashboardPage() {
           {isAdmin && <TabsTrigger value="admin">Admin</TabsTrigger>}
         </TabsList>
 
+        {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-8">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Job Sites</CardTitle>
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{recentSites.length}</div>
-                <p className="text-xs text-muted-foreground">Active job sites</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Inductions</CardTitle>
-                <ClipboardList className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">12</div>
-                <p className="text-xs text-muted-foreground">Completed inductions</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">SWMS</CardTitle>
-                <FileText className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">8</div>
-                <p className="text-xs text-muted-foreground">Signed SWMS</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Hours</CardTitle>
-                <BarChart3 className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">42</div>
-                <p className="text-xs text-muted-foreground">Hours this week</p>
-              </CardContent>
-            </Card>
+            <DashboardStat title="Job Sites" value={recentSites.length} icon={MapPin} description="Active job sites" />
+            <DashboardStat title="Inductions" value={12} icon={ClipboardList} description="Completed inductions" />
+            <DashboardStat title="SWMS" value={8} icon={FileText} description="Signed SWMS" />
+            <DashboardStat title="Hours" value={42} icon={BarChart3} description="Hours this week" />
           </div>
 
           <h2 className="text-2xl font-bold mt-8">Quick Actions</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <Card>
-              <CardHeader>
-                <CardTitle>Sign In to Site</CardTitle>
-                <CardDescription>Scan QR code or select a site to sign in</CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col items-center">
-                <div className="mb-4 bg-white p-4 rounded-lg border">
-                  <QrCode className="h-32 w-32 text-primary" />
-                </div>
-                <Button asChild className="w-full">
-                  <Link href="/job-sites">Select Site</Link>
-                </Button>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Complete Inductions</CardTitle>
-                <CardDescription>View and complete required site inductions</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button asChild className="w-full">
-                  <Link href="/inductions">View Inductions</Link>
-                </Button>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Sign SWMS</CardTitle>
-                <CardDescription>Review and sign Safe Work Method Statements</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button asChild className="w-full">
-                  <Link href="/swms">View SWMS</Link>
-                </Button>
-              </CardContent>
-            </Card>
+            <QuickAction title="Sign In to Site" description="Scan QR code or select a site to sign in" icon={QrCode} link="/job-sites" />
+            <QuickAction title="Complete Inductions" description="View and complete required site inductions" icon={ClipboardList} link="/inductions" />
+            <QuickAction title="Sign SWMS" description="Review and sign Safe Work Method Statements" icon={FileText} link="/swms" />
           </div>
         </TabsContent>
 
+        {/* Job Sites Tab */}
         <TabsContent value="sites" className="space-y-8">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold">Recent Job Sites</h2>
@@ -189,90 +245,16 @@ export default function DashboardPage() {
             </Button>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {recentSites.map((site) => (
-              <Card key={site.id}>
-                <CardHeader>
-                  <CardTitle>{site.name}</CardTitle>
-                  <CardDescription>{site.address}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center mb-4">
-                    <Users className="h-5 w-5 mr-2 text-muted-foreground" />
-                    <span>{site.activeWorkers} active workers</span>
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button asChild variant="outline" size="sm">
-                      <Link href={`/job-sites/${site.id}`}>Details</Link>
-                    </Button>
-                    <Button asChild size="sm">
-                      <Link href={`/job-sites/${site.id}/sign-in`}>Sign In</Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-
-            {recentSites.length === 0 && (
-              <div className="col-span-full flex flex-col items-center justify-center py-10 border rounded-lg">
-                <p className="mb-4 text-muted-foreground">No job sites found</p>
-                <Button asChild>
-                  <Link href="/job-sites/new">Add Your First Job Site</Link>
-                </Button>
-              </div>
-            )}
-          </div>
+          <JobSitesList sites={recentSites} />
         </TabsContent>
 
+        {/* Admin Tab */}
         {isAdmin && (
           <TabsContent value="admin" className="space-y-8">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Admin Tools</h2>
-              <Button asChild>
-                <Link href="/admin/dashboard">Go to Admin Dashboard</Link>
-              </Button>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Site Overview</CardTitle>
-                  <CardDescription>View all site activity and compliance</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button asChild className="w-full">
-                    <Link href="/admin/dashboard">View Overview</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Manage Users</CardTitle>
-                  <CardDescription>Add, edit, or remove system users</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button asChild className="w-full">
-                    <Link href="/admin/users">Manage Users</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Generate Reports</CardTitle>
-                  <CardDescription>Create and view system reports</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button asChild className="w-full">
-                    <Link href="/admin/reports">View Reports</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
+            <AdminDashboard />
           </TabsContent>
         )}
       </Tabs>
     </div>
-  )
+  );
 }
-
-
