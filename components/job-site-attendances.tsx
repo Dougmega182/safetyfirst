@@ -14,36 +14,46 @@ interface JobSiteAttendancesProps {
   jobSiteId: string
 }
 
-export function JobSiteAttendances({ jobSiteId }: JobSiteAttendancesProps) {
+interface Attendance {
+  id: string;
+  sign_in_time: string;
+  sign_out_time: string | null;
+  name: string;
+  email: string;
+}
+
+export function JobSiteAttendances({ jobSiteId }: Readonly<JobSiteAttendancesProps>) {
   const { toast } = useToast()
-  const [attendances, setAttendances] = useState<any[] | null>(null)
+  const [attendances, setAttendances] = useState<Attendance[] | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
-
+  const dbQuery = useAuthenticatedDb
   useEffect(() => {
     const fetchAttendances = async () => {
-      setLoading(true)
-      setError(null)
-      try {
-        const { data, error: dbError } = await useAuthenticatedDb<any[]>(
-          `
-            SELECT a.*, u.name, u.email
-            FROM attendances a
-            JOIN users u ON a.user_id = u.id
-            WHERE a.job_site_id = $1
-            ORDER BY a.sign_in_time DESC
-          `,
-          [jobSiteId],
-          [jobSiteId],
-        )
+        setLoading(true)
+        setError(null)
+        try {
+          const { data, error: dbError } = dbQuery(
+            `
+              SELECT a.*, u.name, u.email
+              FROM attendances a
+              JOIN users u ON a.user_id = u.id
+              WHERE a.job_site_id = $1
+              ORDER BY a.sign_in_time DESC
+            `,
+            [jobSiteId]
+          )
+          if (dbError) {
+            throw dbError
+          }
 
-        if (dbError) {
-          throw dbError
+        setAttendances(data as Attendance[])
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err)
+        } else {
+          setError(new Error(String(err)))
         }
-
-        setAttendances(data)
-      } catch (err: any) {
-        setError(err)
       } finally {
         setLoading(false)
       }
@@ -51,11 +61,10 @@ export function JobSiteAttendances({ jobSiteId }: JobSiteAttendancesProps) {
 
     fetchAttendances()
   }, [jobSiteId])
-
   const handleSignOut = async (attendanceId: string) => {
     try {
-      // Use the authenticated database hook to update the attendance
-      const { data, error } = await useAuthenticatedDb(
+      // Use the authenticated database query function to update the attendance
+      const { error } = dbQuery(
         `
           UPDATE attendances
           SET sign_out_time = NOW()
@@ -151,7 +160,7 @@ export function JobSiteAttendances({ jobSiteId }: JobSiteAttendancesProps) {
             </TableCell>
             <TableCell>{formatTime(attendance.sign_in_time)}</TableCell>
             <TableCell>{attendance.sign_out_time ? formatTime(attendance.sign_out_time) : "-"}</TableCell>
-            <TableCell>{calculateDuration(attendance.sign_in_time, attendance.sign_out_time) || "-"}</TableCell>
+            <TableCell>{calculateDuration(attendance.sign_in_time, attendance.sign_out_time) ?? "-"}</TableCell>
             <TableCell>
               {attendance.sign_out_time ? (
                 <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">

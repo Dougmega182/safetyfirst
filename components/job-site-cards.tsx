@@ -40,7 +40,7 @@ const MOCK_JOBSITES: JobSite[] = [
 ]
 
 export default function JobSiteCards() {
-  const [jobSites, setJobSites] = useState<JobSite[]>(MOCK_JOBSITES)
+  const [jobSites] = useState<JobSite[]>(MOCK_JOBSITES)
 
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

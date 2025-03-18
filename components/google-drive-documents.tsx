@@ -10,19 +10,28 @@ import { useApiClient } from "@/lib/api-client"
 import { FileText, ExternalLink, AlertCircle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
+interface GoogleDriveDocument {
+  id: string;
+  name: string;
+  webViewLink: string;
+}
+
 export function GoogleDriveDocuments() {
   const user = useUser()
-  const api = useApiClient()
+  interface GoogleDriveResponse {
+    error?: string;
+    connectUrl?: string;
+    files?: GoogleDriveDocument[];
+  }
+  const api = useApiClient() as unknown as { get: (url: string) => Promise<GoogleDriveResponse> }
   const { toast } = useToast()
-  const [documents, setDocuments] = useState<any[]>([])
+  const [documents, setDocuments] = useState<GoogleDriveDocument[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [connectUrl, setConnectUrl] = useState<string | null>(null)
 
   // Check if the user has connected their Google account
-  const googleAccount = user.useConnectedAccount("google", {
-    redirectIfMissing: false,
-  })
+  const googleAccount = user && "connectedAccounts" in user ? (user as { connectedAccounts: { provider: string }[] }).connectedAccounts.find((account: { provider: string }) => account.provider === "google") : undefined;
 
   const isConnected = !!googleAccount
 
@@ -46,7 +55,7 @@ export function GoogleDriveDocuments() {
         }
 
         setDocuments(response.files || [])
-      } catch (err) {
+      } catch {
         setError("Failed to fetch documents")
         toast({
           title: "Error",
@@ -63,12 +72,16 @@ export function GoogleDriveDocuments() {
 
   const handleConnect = async () => {
     try {
-      // This will redirect to Google's OAuth page
-      await user.getConnectedAccount("google", {
-        or: "redirect",
-        scopes: ["https://www.googleapis.com/auth/drive.readonly"],
-      })
-    } catch (err) {
+      // This will redirect to Google's OAuth page if available
+      if (user && "getConnectedAccount" in user && typeof user.getConnectedAccount === "function") {
+        await user.getConnectedAccount("google", {
+          or: "redirect",
+          scopes: ["https://www.googleapis.com/auth/drive.readonly"],
+        })
+      } else {
+        throw new Error("getConnectedAccount method is not available on this user")
+      }
+    } catch {
       toast({
         title: "Connection Failed",
         description: "Could not connect to Google Drive",

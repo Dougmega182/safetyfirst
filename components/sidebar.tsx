@@ -3,6 +3,11 @@
 
 import type React from "react"
 
+type SidebarNavProps = Readonly<{
+  className?: string;
+  [key: string]: unknown;
+}>
+
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { useAuth } from "@/lib/use-auth"
@@ -19,7 +24,6 @@ import {
 } from "@/components/ui/sidebar"
 
 
-interface SidebarNavProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function SidebarNav({ className, ...props }: SidebarNavProps) {
   const { user } = useAuth()

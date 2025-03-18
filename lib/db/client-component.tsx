@@ -5,7 +5,7 @@ import { useAuth } from "@/lib/use-auth"
 import { useEffect, useState } from "react"
 import { getClientAuthDb } from "./auth-db"
 
-export function useAuthenticatedNeon<T>(query: string, dependencies: any[] = []) {
+export function useAuthenticatedNeon<T>(query: string, dependencies: unknown[] = []) {
   const { user } = useAuth()
   const [data, setData] = useState<T[]>([])
   const [loading, setLoading] = useState(true)

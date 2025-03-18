@@ -11,12 +11,20 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 interface DateRangePickerProps {
-  date: DateRange | undefined
-  setDate: (date: DateRange) => void
-  className?: string
+  readonly date: DateRange | undefined
+  readonly setDate: (date: DateRange) => void
+  readonly className?: string
 }
 
 export function DateRangePicker({ date, setDate, className }: DateRangePickerProps) {
+  let displayDate = "Pick a date range";
+  if (date?.from) {
+    if (date.to) {
+      displayDate = `${format(date.from, "LLL dd, y")} - ${format(date.to, "LLL dd, y")}`;
+    } else {
+      displayDate = format(date.from, "LLL dd, y");
+    }
+  }
   return (
     <div className={cn("grid gap-2", className)}>
       <Popover>
@@ -27,17 +35,7 @@ export function DateRangePicker({ date, setDate, className }: DateRangePickerPro
             className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {date?.from ? (
-              date.to ? (
-                <>
-                  {format(date.from, "LLL dd, y")} - {format(date.to, "LLL dd, y")}
-                </>
-              ) : (
-                format(date.from, "LLL dd, y")
-              )
-            ) : (
-              <span>Pick a date range</span>
-            )}
+            {displayDate}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">

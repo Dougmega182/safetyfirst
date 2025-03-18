@@ -26,8 +26,9 @@ export default function Home() {
 
         <form className="mt-6 space-y-4">
           <div>
-            <label className="block text-gray-700">Email address</label>
+            <label htmlFor="email" className="block text-gray-700">Email address</label>
             <input
+              id="email"
               type="email"
               placeholder="Enter your email address"
               className="w-full px-4 py-3 border rounded-md focus:outline-none focus:ring focus:border-blue-500"
@@ -35,8 +36,9 @@ export default function Home() {
           </div>
 
           <div>
-            <label className="block text-gray-700">Password</label>
+            <label htmlFor="password" className="block text-gray-700">Password</label>
             <input
+              id="password"
               type="password"
               placeholder="Enter your password"
               className="w-full px-4 py-3 border rounded-md focus:outline-none focus:ring focus:border-blue-500"

@@ -11,7 +11,7 @@ interface SignatureCanvasProps {
   onSave: (signature: string | null) => void
 }
 
-export default function SignatureCanvas({ onSave }: SignatureCanvasProps) {
+export default function SignatureCanvas({ onSave }: Readonly<SignatureCanvasProps>) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isDrawing, setIsDrawing] = useState(false)
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null)
@@ -114,8 +114,8 @@ export default function SignatureCanvas({ onSave }: SignatureCanvasProps) {
       offsetY = touch.clientY - rect.top
     } else {
       // Mouse event
-      offsetX = (e as React.MouseEvent).nativeEvent.offsetX
-      offsetY = (e as React.MouseEvent).nativeEvent.offsetY
+      offsetX = e.nativeEvent.offsetX
+      offsetY = e.nativeEvent.offsetY
     }
 
     return { offsetX, offsetY }

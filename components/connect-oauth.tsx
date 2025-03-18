@@ -16,7 +16,7 @@ interface ConnectOAuthProps {
   onDisconnect?: () => void
 }
 
-export function ConnectOAuth({ provider, scopes, onConnect, onDisconnect }: ConnectOAuthProps) {
+export function ConnectOAuth({ provider, scopes, onConnect, onDisconnect }: Readonly<ConnectOAuthProps>) {
   const user = useUser()
   const [isConnecting, setIsConnecting] = useState(false)
   const [isDisconnecting, setIsDisconnecting] = useState(false)
@@ -27,21 +27,16 @@ export function ConnectOAuth({ provider, scopes, onConnect, onDisconnect }: Conn
   }
 
   // Try to get the connected account, but don't redirect automatically
-  const connectedAccount = user.useConnectedAccount(provider, {
-    scopes,
-  })
+  const connectedAccount = 'connectedAccounts' in user && (user.connectedAccounts as { provider: OAuthProvider; scopes: string[] }[]).find(account => account.provider === provider && (!scopes || scopes.every(scope => account.scopes.includes(scope))))
 
   const isConnected = !!connectedAccount
 
   const handleConnect = async () => {
     setIsConnecting(true)
     try {
-      // This will redirect to the OAuth provider
-      await user.getConnectedAccount(provider, {
-        or: "redirect", // Assuming this is correct for your library
-        scopes,
-      })
-      // This code will only run after returning from the OAuth provider
+      // Redirecting to the OAuth connect endpoint for authentication
+      window.location.href = `/api/oauth/connect?provider=${provider}&scopes=${scopes?.join(',') ?? ''}`
+      // After returning from the OAuth provider
       if (onConnect) onConnect()
     } catch (error) {
       console.error(`Error connecting to ${provider}:`, error)
@@ -92,8 +87,8 @@ export function ConnectOAuth({ provider, scopes, onConnect, onDisconnect }: Conn
         <div className="text-sm">
           <p className="font-medium mb-2">Enables:</p>
           <ul className="list-disc pl-5 space-y-1">
-          {services.map((service: string, index: number) => (
-           <li key={index} className={isConnected ? "text-foreground" : "text-muted-foreground"}>
+          {services.map((service: string) => (
+           <li key={service} className={isConnected ? "text-foreground" : "text-muted-foreground"}>
           {service}
            </li>
            ))}
