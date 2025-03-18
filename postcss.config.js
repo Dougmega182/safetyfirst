@@ -1,11 +1,6 @@
-// safetyfirst/postcss.config.js
-'use strict';
-const module = module || {};
-module.exports = {
+export default {
   plugins: {
     tailwindcss: {},
     autoprefixer: {},
   },
-}
-
-
+};
