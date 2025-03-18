@@ -60,7 +60,7 @@ const mockSwms = [
 export default function SwmsPage() {
   const { user, loading } = useAuth()
   const router = useRouter()
-  const [swms, setSwms] = useState(mockSwms)
+  const [swms] = useState(mockSwms)
 
   useEffect(() => {
     if (!loading && !user) {
@@ -138,7 +138,7 @@ export default function SwmsPage() {
                   <TableCell>{getStatusBadge(swmsItem.status)}</TableCell>
                   <TableCell>{swmsItem.submittedBy}</TableCell>
                   <TableCell>{swmsItem.submittedDate}</TableCell>
-                  <TableCell>{swmsItem.approvedBy || "-"}</TableCell>
+                  <TableCell>{swmsItem.approvedBy ?? "-"}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

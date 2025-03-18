@@ -133,82 +133,6 @@ export default function SiteSignInPage() {
     }
   }
 
-  const handleCompleteInduction = async (inductionId: string) => {
-    try {
-      const response = await fetch(`/api/inductions/${inductionId}/complete`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          signature,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to complete induction")
-      }
-
-      // Update the inductions list
-      setInductions((prev) =>
-        prev.map((induction) => (induction.id === inductionId ? { ...induction, completed: true } : induction)),
-      )
-
-      toast({
-        title: "Induction completed",
-        description: "You have successfully completed this induction",
-      })
-    } catch (error) {
-      console.error("Error completing induction:", error)
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to complete induction",
-      })
-    }
-  }
-
-  const handleSignSwms = async (swmsId: string) => {
-    if (!signature) {
-      toast({
-        variant: "destructive",
-        title: "Signature required",
-        description: "Please provide your signature to sign the SWMS",
-      })
-      return
-    }
-
-    try {
-      const response = await fetch(`/api/swms/${swmsId}/sign`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          signature,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to sign SWMS")
-      }
-
-      // Update the SWMS list
-      setSwmsList((prev) => prev.map((swms) => (swms.id === swmsId ? { ...swms, signed: true } : swms)))
-
-      toast({
-        title: "SWMS signed",
-        description: "You have successfully signed this SWMS",
-      })
-    } catch (error) {
-      console.error("Error signing SWMS:", error)
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to sign SWMS",
-      })
-    }
-  }
 
   if (isLoading) {
     return (
@@ -236,7 +160,6 @@ export default function SiteSignInPage() {
 
   const allInductionsCompleted = inductions.every((induction) => induction.completed)
   const allSwmsSigned = swmsList.every((swms) => swms.signed)
-  const canSignIn = allInductionsCompleted && allSwmsSigned
 
   return (
     <div className="container py-10">

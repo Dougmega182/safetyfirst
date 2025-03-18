@@ -6,7 +6,6 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useAuth } from "@/lib/use-auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -17,7 +16,6 @@ import { ArrowLeft, Save } from "lucide-react"
 import Link from "next/link"
 
 export default function NewJobSitePage() {
-  const { user } = useAuth()
   const router = useRouter()
   const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)

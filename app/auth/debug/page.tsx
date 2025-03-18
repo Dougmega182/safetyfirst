@@ -9,7 +9,13 @@ import { useAuth } from "@/lib/use-auth"
 
 export default function DebugPage() {
   const { user, loading } = useAuth()
-  const [sessionData, setSessionData] = useState<any>(null)
+  interface SessionData {
+    userId: string;
+    expires: string;
+    [key: string]: unknown;
+  }
+
+  const [sessionData, setSessionData] = useState<SessionData | null>(null)
   const [sessionLoading, setSessionLoading] = useState(false)
   const [cookies, setCookies] = useState<string>("")
 
@@ -26,7 +32,7 @@ export default function DebugPage() {
       setSessionData(data)
     } catch (error) {
       console.error("Error checking session:", error)
-      setSessionData({ error: "Failed to fetch session data" })
+      setSessionData({ userId: "", expires: "", error: "Failed to fetch session data" })
     } finally {
       setSessionLoading(false)
     }
@@ -65,13 +71,17 @@ export default function DebugPage() {
             <CardDescription>Data from /api/auth/session endpoint</CardDescription>
           </CardHeader>
           <CardContent>
-            {sessionLoading ? (
-              <div>Loading session data...</div>
-            ) : sessionData ? (
-              <pre className="bg-muted p-4 rounded-md overflow-auto">{JSON.stringify(sessionData, null, 2)}</pre>
-            ) : (
-              <div>Click the button below to check session data</div>
-            )}
+            {(() => {
+              let sessionContent;
+              if (sessionLoading) {
+                sessionContent = <div>Loading session data...</div>;
+              } else if (sessionData) {
+                sessionContent = <pre className="bg-muted p-4 rounded-md overflow-auto">{JSON.stringify(sessionData, null, 2)}</pre>;
+              } else {
+                sessionContent = <div>Click the button below to check session data</div>;
+              }
+              return sessionContent;
+            })()}
           </CardContent>
           <CardFooter>
             <Button onClick={checkSession} disabled={sessionLoading}>

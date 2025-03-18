@@ -15,18 +15,13 @@ export default function LoginPage() {
       </Link>
 
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[450px]">
-        <SignIn
-          automaticRedirect={true}
-          firstTab="password"
-          extraInfo={
-            <div className="mt-4 text-center text-sm text-muted-foreground">
-              Don&apos;t have an account?{" "}
-              <Link href="/auth/register" className="text-blue-600 underline-offset-4 hover:underline">
-                Sign up
-              </Link>
-            </div>
-          }
-        />
+        <SignIn />
+        <div className="mt-4 text-center text-sm text-muted-foreground">
+          Don&apos;t have an account?{" "}
+          <Link href="/auth/register" className="text-blue-600 underline-offset-4 hover:underline">
+            Sign up
+          </Link>
+        </div>
       </div>
     </div>
   )

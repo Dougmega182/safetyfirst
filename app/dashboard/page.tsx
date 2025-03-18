@@ -53,12 +53,15 @@ interface StackUser {
 }
 
 // Admin Dashboard Component
-const AdminDashboard = () => (
+const AdminDashboard = ({ icon: Icon, title }: { icon: LucideIcon, title: string }) => (
   <div>
     <h2 className="text-2xl font-bold mb-4">Admin Dashboard</h2>
     <div className="grid gap-6 md:grid-cols-2">
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardTitle>{title}</CardTitle>
+          <Icon className="h-4 w-4 text-muted-foreground" />
+          <Icon className="h-4 w-4 text-muted-foreground" />
           <CardTitle>User Management</CardTitle>
           <CardDescription>Manage users and permissions</CardDescription>
         </CardHeader>
@@ -96,7 +99,6 @@ const DashboardStat = ({ title, value, icon: Icon, description }: DashboardStatP
     </CardContent>
   </Card>
 );
-
 // Quick Action Card Component
 const QuickAction = ({ title, description, link }: QuickActionProps) => (
   <Card>
@@ -250,8 +252,11 @@ export default function DashboardPage() {
 
         {/* Admin Tab */}
         {isAdmin && (
-          <TabsContent value="admin" className="space-y-8">
-            <AdminDashboard />
+          <TabsContent value="admin">
+            <div>
+              <AdminDashboard icon={Users} title="User Management" />
+              <AdminDashboard icon={Users} title="Site Management" />
+            </div>
           </TabsContent>
         )}
       </Tabs>

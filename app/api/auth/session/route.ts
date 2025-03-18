@@ -12,7 +12,7 @@ export async function GET() {
         .filter(method => typeof stackServerApp[method as keyof typeof stackServerApp] === 'function')
     );
     
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
     const sessionToken = cookieStore.get("auth-session")?.value
 
     if (!sessionToken) {

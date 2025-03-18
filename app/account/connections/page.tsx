@@ -3,15 +3,21 @@
 //connections page.tsx
 import { useUser } from "@stackframe/stack"
 import { ConnectOAuth } from "@/components/connect-oauth"
-import { type OAuthProvider, providerScopes } from "@/lib/oauth-utils"
+import { type OAuthProvider } from "@/lib/oauth-utils"
 import { useRequireOnboarding } from "@/lib/onboarding"
+
+export const providerScopes = {
+  google: ["profile", "email"],
+  microsoft: ["user.read"],
+  github: ["read:user", "user:email"],
+}
 
 export default function ConnectionsPage() {
   // Ensure user has completed onboarding
   useRequireOnboarding()
 
-  // Get the current user
-  const user = useUser({ or: "redirect" })
+  // Ensure user is redirected if not authenticated
+  useUser({ or: "redirect" })
 
   // List of providers we support
   const providers: OAuthProvider[] = ["google", "microsoft", "github"]

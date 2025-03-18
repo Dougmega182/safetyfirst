@@ -3,6 +3,13 @@
 
 import type React from "react"
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
+import { useMemo } from "react"
+// Create file at components/mobile-provider.tsx
+
+
+interface MobileProviderProps {
+  children: ReactNode;
+}
 
 type MobileContextType = {
   isMobile: boolean
@@ -16,7 +23,7 @@ interface MobileProviderProps {
   children: ReactNode
 }
 
-export function MobileProvider({ children }: MobileProviderProps) {
+export function MobileProvider({ children }: Readonly<MobileProviderProps>) {
   const [isMobile, setIsMobile] = useState(false)
   const [mounted, setMounted] = useState(false)
 
@@ -39,12 +46,14 @@ export function MobileProvider({ children }: MobileProviderProps) {
     }
   }, [])
 
+  const value = useMemo(() => ({ isMobile }), [isMobile])
+
   // Only render children after component has mounted to avoid hydration issues
   if (!mounted) {
     return null
   }
 
-  return <MobileContext.Provider value={{ isMobile }}>{children}</MobileContext.Provider>
+  return <MobileContext.Provider value={value}>{children}</MobileContext.Provider>
 }
 
 // This is a HOC (Higher Order Component) to wrap components that need mobile detection
@@ -55,4 +64,6 @@ export function withMobile<P extends object>(Component: React.ComponentType<P & 
   }
 }
 
+
+// Removed conflicting local useMemo function
 

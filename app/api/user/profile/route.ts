@@ -14,21 +14,21 @@ export async function GET() {
     }
 
     // Get the full user profile from Stack Auth
-    const user = await stackServerApp.getUser(verifiedUser.id)
+    const user = await stackServerApp.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 })
+    }
 
     // Return the user profile with sensitive information removed
     return NextResponse.json({
       id: user.id,
-      email: user.email,
+      emailAddress: user.email,
       displayName: user.displayName,
-      imageUrl: user.imageUrl,
+      avatar: user.avatar,
       clientMetadata: user.clientMetadata,
-      clientReadOnlyMetadata: user.clientReadOnlyMetadata,
+      clientReadOnlyMetadata: user.readOnlyMetadata,
       // Don't include serverMetadata for security
-      connectedAccounts: user.connectedAccounts.map((account) => ({
-        provider: account.provider,
-        connected: true,
-      })),
     })
   } catch (error) {
     console.error("Error fetching user profile:", error)

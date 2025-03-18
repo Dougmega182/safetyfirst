@@ -32,16 +32,27 @@ export async function ensureOnboarded(currentPath: string) {
 
     // Verify the token
     const decoded = verify(sessionToken, process.env.STACK_SECRET_SERVER_KEY || "") as { sub: string }
-    const userId = decoded.sub
+
+    // Define the user type
+    interface CurrentUser {
+      id: string;
+      email: string;
+      name: string;
+    }
+
+    interface User extends CurrentUser {
+      serverMetadata?: {
+        onboardingCompleted?: boolean
+      }
+    }
 
     // Get the user
-    const user = await stackServerApp.getUser(userId)
+    const user: User | null = await stackServerApp.getUser({ userId: decoded.sub })
 
     if (!user) {
-      // Handle case where user is not found
-      console.error("User not found")
-      redirect("/auth/stack-login")
-      return false
+    console.error("User not found")
+    redirect("/auth/stack-login")
+    return false
     }
 
     // Check if user is onboarded

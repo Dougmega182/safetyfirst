@@ -2,7 +2,7 @@
 // /app/inductions/page.tsx 
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/use-auth"
 import { Button } from "@/components/ui/button"
@@ -55,7 +55,7 @@ const mockInductions = [
 export default function InductionsPage() {
   const { user, loading } = useAuth()
   const router = useRouter()
-  const [inductions, setInductions] = useState(mockInductions)
+  const inductions = mockInductions
 
   useEffect(() => {
     if (!loading && !user) {

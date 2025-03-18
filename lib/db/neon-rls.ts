@@ -21,7 +21,7 @@ export async function getAuthenticatedNeonDb(userId?: string) {
   try {
     // Step 1: Fetch the user based on the provided userId or the current session
     const user = userId 
-      ? await stackServerApp.getUser(userId) 
+      ? await stackServerApp.getUser({ or: "throw" })  // Remove userId from options
       : await stackServerApp.getUser()
 
     if (!user) {
@@ -46,7 +46,15 @@ export async function getAuthenticatedNeonDb(userId?: string) {
 }
 
 // Helper function to extract the access token from the user
-async function getAccessToken(user: any) {
+interface AuthUser {
+  id: string;
+  accessToken?: string;
+  session?: {
+    accessToken?: string;
+  };
+}
+
+async function getAccessToken(user: AuthUser) {
   // Option 1: Check if the accessToken exists directly in the user object (adjust based on your implementation)
   if (user?.accessToken) {
     return user.accessToken
@@ -74,3 +82,7 @@ async function getTokenFromApi(userId: string) {
   return data.accessToken
 }
 
+// Add to lib/db/neon-rls.ts
+export function getAdminNeonDb() {
+  // Implementation
+}

@@ -11,7 +11,7 @@
  * If you decide to implement RLS in the future, here's how you would do it:
  */
 
-import { generateKeyPair, SignJWT } from "jose"
+import { generateKeyPair, SignJWT, KeyLike } from "jose"
 
 /**
  * Generate RSA key pair for JWT signing and verification
@@ -28,7 +28,7 @@ export async function generateKeys() {
 /**
  * Sign a JWT with the private key
  */
-export async function signJWT(payload: any, privateKey: any) {
+export async function signJWT(payload: Record<string, unknown>, privateKey: KeyLike) {
   const jwt = await new SignJWT(payload)
     .setProtectedHeader({ alg: "RS256" })
     .setIssuedAt()

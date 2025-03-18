@@ -5,7 +5,7 @@ import { cookies } from "next/headers"
 import { stackServerApp } from "@/lib/stack-auth";
 
 
-export async function POST(request: Request) {
+export async function POST() {
   try {
     const cookieStore = await cookies()
     const sessionToken = cookieStore.get("auth-session")?.value

@@ -8,7 +8,7 @@ import { updateUserServerMetadata, updateUserClientReadOnlyMetadata } from "@/li
 export async function POST(request: Request) {
   try {
     // Get the session token
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
     const sessionToken = cookieStore.get("auth-session")?.value
 
     if (!sessionToken) {
@@ -24,8 +24,8 @@ export async function POST(request: Request) {
 
     // Update server metadata
     await updateUserServerMetadata(userId, {
-      safetyTrainingCompleted: Object.values(safetyTraining).some(Boolean),
-      onboardingCompleted: true,
+      safetyTrainingCompleted: String(Object.values(safetyTraining).some(Boolean)),
+      onboardingCompleted: String(true),
     })
 
     // Update client read-only metadata

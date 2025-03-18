@@ -29,11 +29,11 @@ export function useRequireOnboarding() {
     }
 
     // Redirect to onboarding if user is not onboarded
-    if (!user?.clientMetadata?.onboarded) {
+    if (!(user?.clientMetadata as { onboarded?: boolean })?.onboarded) {
       router.push("/onboarding");
     }
   }, [user, router, pathname]);
 
-  return { isOnboarded: user?.clientMetadata?.onboarded === true };
+  return { isOnboarded: (user?.clientMetadata as { onboarded?: boolean })?.onboarded === true };
 }
 

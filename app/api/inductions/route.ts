@@ -4,6 +4,18 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getUserFromRequest } from "@/lib/auth-utils"
 
+interface User {
+  id: string;
+  displayName: string | null;
+  email: string;
+  authMethod: string | null;
+  role: string | null;
+}
+
+declare module '@/lib/auth-utils' {
+  export function getUserFromRequest(request: Request): Promise<User | null>;
+}
+
 export async function GET(request: Request) {
   try {
     const user = await getUserFromRequest(request)
@@ -64,6 +76,21 @@ export async function POST(request: Request) {
     console.error("Error creating induction:", error)
     return NextResponse.json({ message: "An error occurred while creating the induction" }, { status: 500 })
   }
+}
+
+export async function fetchUserFromRequest(request: Request): Promise<{ id: string; displayName: string | null; email: string; authMethod: string | null; role: string | null; } | null> {
+  // Example implementation
+  const user = await getUserFromRequest(request);
+  if (user) {
+    return {
+      id: user.id,
+      displayName: user.displayName,
+      email: user.email,
+      authMethod: user.authMethod,
+      role: user.role || null, // Ensure role is included
+    };
+  }
+  return null;
 }
 
 

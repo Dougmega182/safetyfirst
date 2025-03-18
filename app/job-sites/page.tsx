@@ -6,9 +6,17 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { MapPin, Users, Plus } from "lucide-react"
 
+interface JobSite {
+  id: string;
+  name: string;
+  address: string;
+  description?: string;
+  active_workers?: number;
+}
+
 export default async function JobSitesPage() {
   // Fetch job sites using the authenticated database connection
-  const jobSites = await getUserJobSites()
+  const jobSites = (await getUserJobSites()) as JobSite[]
 
   return (
     <div className="container py-10">
@@ -25,15 +33,15 @@ export default async function JobSitesPage() {
       </div>
 
       {jobSites.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-10 border rounded-lg">
-          <p className="mb-4 text-muted-foreground">No job sites found</p>
-          <Button asChild>
-            <Link href="/job-sites/new">Add Your First Job Site</Link>
-          </Button>
-        </div>
+          <div>
+            <p className="mb-4 text-muted-foreground">No job sites found</p>
+            <Button asChild>
+              <Link href="/job-sites/new">Add Your First Job Site</Link>
+            </Button>
+          </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {jobSites.map((site: any) => (
+          {jobSites.map((site: JobSite) => (
             <Card key={site.id}>
               <CardHeader>
                 <CardTitle>{site.name}</CardTitle>
@@ -48,7 +56,7 @@ export default async function JobSitesPage() {
                 )}
                 <div className="flex items-center mb-4">
                   <Users className="h-5 w-5 mr-2 text-muted-foreground" />
-                  <span>{site.active_workers || 0} active workers</span>
+                  <span>{site.active_workers ?? 0} active workers</span>
                 </div>
                 <div className="flex space-x-2">
                   <Button asChild variant="outline" size="sm">

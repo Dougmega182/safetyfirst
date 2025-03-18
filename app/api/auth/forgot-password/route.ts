@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     }
 
     // Create a reset token
-    const resetToken = sign({ id: user.id, action: "reset_password" }, process.env.JWT_SECRET || "fallback-secret", {
+    const resetToken = sign({ id: user.id, action: "reset_password" }, process.env.JWT_SECRET ?? "fallback-secret", {
       expiresIn: "1h",
     })
 
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASSWORD) {
       const transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT || 587),
+        port: Number(process.env.SMTP_PORT ?? 587),
         secure: process.env.SMTP_SECURE === "true",
         auth: {
           user: process.env.SMTP_USER,
@@ -46,10 +46,10 @@ export async function POST(request: Request) {
         },
       })
 
-      const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/auth/reset-password?token=${resetToken}`
+      const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/auth/reset-password?token=${resetToken}`
 
       await transporter.sendMail({
-        from: process.env.SMTP_FROM || '"Safety First" <noreply@example.com>',
+        from: process.env.SMTP_FROM ?? '"Safety First" <noreply@example.com>',
         to: email,
         subject: "Reset your password",
         html: `

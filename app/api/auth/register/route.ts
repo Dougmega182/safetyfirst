@@ -32,6 +32,9 @@ export async function POST(request: Request) {
           },
         },
       },
+      include: {
+        details: true, // Include details relation
+      },
     })
 
     // Create session token (you need to implement token generation logic)

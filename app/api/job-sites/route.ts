@@ -4,6 +4,16 @@ import { NextResponse } from "next/server"
 import { getAuthenticatedNeonDb } from "@/lib/db/neon-rls"
 import { verifyAuthToken } from "@/lib/auth-server"
 
+interface JobSite {
+  id: string
+  name: string
+  address: string
+  description: string
+  image_url: string
+  created_at: string
+  active_workers: string
+}
+
 export async function GET(request: Request) {
   try {
     // Verify the user's token
@@ -27,17 +37,16 @@ export async function GET(request: Request) {
       FROM job_sites j
       ORDER BY j.created_at DESC
     `
-
     // Add limit if provided
     if (limit) {
       query += ` LIMIT ${Number.parseInt(limit)}`
     }
 
     // Execute the query
-    const jobSites = await sql(query)
+    const jobSites = await sql`${query}`
 
     // Transform the data to match the expected format
-    const transformedJobSites = jobSites.map((site: any) => ({
+    const transformedJobSites = jobSites.map((site: Record<keyof JobSite, string>) => ({
       id: site.id,
       name: site.name,
       address: site.address,

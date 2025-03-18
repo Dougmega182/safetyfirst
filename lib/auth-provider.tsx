@@ -3,7 +3,7 @@
 
 import type React from "react"
 
-import { createContext, useEffect, useState } from "react"
+import { createContext, useEffect, useState, useMemo } from "react"
 import { useToast } from "@/components/ui/use-toast"
 
 type User = {
@@ -33,7 +33,7 @@ export const AuthContext = createContext<AuthContextType>({
   signOut: () => {},
 })
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { readonly children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -106,7 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Get the callback URL from the query parameters if available
       const urlParams = new URLSearchParams(window.location.search)
-      const callbackUrl = urlParams.get("callbackUrl") || "/dashboard"
+      const callbackUrl = urlParams.get("callbackUrl") ?? "/dashboard"
 
       // Force a hard navigation instead of client-side routing
       window.location.href = callbackUrl
@@ -133,7 +133,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
         body: JSON.stringify({ name, email, password, company, position }),
       })
-
       const data = await response.json()
 
       if (!response.ok) {
@@ -191,8 +190,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const value = useMemo(() => ({ user, loading, token, signIn, signUp, signOut }), [user, loading, token, signIn, signUp, signOut])
+
   return (
-    <AuthContext.Provider value={{ user, loading, token, signIn, signUp, signOut }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
   )
 }
 

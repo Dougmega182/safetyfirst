@@ -40,14 +40,14 @@ export async function POST(request: Request) {
     }
 
     // Create JWT token with user ID and role from details
-    const role = user.details?.role || "USER"
+    const role = user.details?.role ?? "USER"
     const token = sign(
       {
         id: user.id,
         email: user.email,
         role: role,
       },
-      process.env.JWT_SECRET || "fallback-secret",
+      process.env.JWT_SECRET ?? "fallback-secret",
       { expiresIn: "7d" },
     )
 

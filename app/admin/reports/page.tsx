@@ -76,7 +76,7 @@ export default function AdminReportsPage() {
         throw new Error("Failed to generate report")
       }
 
-      const data = await response.json()
+      await response.json()
 
       toast({
         title: "Report Generated",

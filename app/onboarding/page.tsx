@@ -18,14 +18,21 @@ export default function OnboardingPage() {
   const user = useUser()
   const router = useRouter()
   const [step, setStep] = useState(1)
+  interface UserWithReadOnlyMetadata {
+    clientReadOnlyMetadata?: { jobTitle?: string; companyName?: string }
+    clientMetadata?: { preferredJobSite?: string; notificationPreferences?: { email?: boolean; sms?: boolean; push?: boolean } }
+  }
+  
+  const typedUser = user as UserWithReadOnlyMetadata | null;
+  
   const [formData, setFormData] = useState({
-    jobTitle: user?.clientReadOnlyMetadata?.jobTitle || "",
-    company: user?.clientReadOnlyMetadata?.companyName || "",
-    preferredJobSite: user?.clientMetadata?.preferredJobSite || "",
+    jobTitle: typedUser?.clientReadOnlyMetadata?.jobTitle || "",
+    company: typedUser?.clientReadOnlyMetadata?.companyName || "",
+    preferredJobSite: typedUser?.clientMetadata?.preferredJobSite || "",
     notifications: {
-      email: user?.clientMetadata?.notificationPreferences?.email !== false,
-      sms: user?.clientMetadata?.notificationPreferences?.sms === true,
-      push: user?.clientMetadata?.notificationPreferences?.push !== false,
+      email: (user?.clientMetadata as { notificationPreferences?: { email?: boolean } })?.notificationPreferences?.email !== false,
+      sms: (user?.clientMetadata as { notificationPreferences?: { sms?: boolean } })?.notificationPreferences?.sms === true,
+      push: (user?.clientMetadata as { notificationPreferences?: { push?: boolean } })?.notificationPreferences?.push !== false,
     },
     safetyTraining: {
       generalInduction: false,
@@ -36,7 +43,7 @@ export default function OnboardingPage() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const updateForm = (field: string, value: any) => {
+  const updateForm = (field: string, value: string | boolean | { [key: string]: boolean }) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,

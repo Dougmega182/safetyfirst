@@ -1,10 +1,20 @@
 // safetyfirst/app/account/settings/page.tsx
 "use client";
 //settings page.tsx
-import { AccountSettings } from "@stackframe/stack";
+import { AccountSettings, AccountSettingsProps } from "@stackframe/stack";
 import { useAuth } from "@/lib/use-auth";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, JSX } from "react";
+
+// export interface AccountSettingsProps {
+//   fullPage?: boolean;
+//   extraItems?: {
+// //     title: string;
+//     iconName: string;
+//     id: string;
+//     content: JSX.Element;
+//   }[];
+// }
 
 export default function AccountSettingsPage() {
   const { user, loading } = useAuth();

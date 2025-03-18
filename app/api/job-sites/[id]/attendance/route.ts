@@ -16,11 +16,8 @@ export async function GET(request: Request, { params }: { params: { id: string }
       include: {
         user: {
           select: {
-            id: true,
-            name: true,
-            email: true,
-            company: true,
-            position: true,
+            user: true,
+            
           },
         },
       },

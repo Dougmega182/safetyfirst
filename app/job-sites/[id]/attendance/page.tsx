@@ -2,7 +2,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter, useParams } from "next/navigation"
+import { useParams } from "next/navigation"
 import { useAuth } from "@/lib/use-auth"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -30,8 +30,7 @@ type Attendance = {
 }
 
 export default function SiteAttendancePage() {
-  const { user } = useAuth()
-  const router = useRouter()
+  useAuth() // Keep the auth check without destructuring
   const params = useParams()
   const { toast } = useToast()
   const [jobSite, setJobSite] = useState<JobSite | null>(null)
@@ -195,7 +194,7 @@ export default function SiteAttendancePage() {
                     </TableCell>
                     <TableCell>{formatTime(attendance.signInTime)}</TableCell>
                     <TableCell>{attendance.signOutTime ? formatTime(attendance.signOutTime) : "-"}</TableCell>
-                    <TableCell>{calculateDuration(attendance.signInTime, attendance.signOutTime) || "-"}</TableCell>
+                    <TableCell>{calculateDuration(attendance.signInTime, attendance.signOutTime) ?? "-"}</TableCell>
                     <TableCell>
                       {attendance.signOutTime ? (
                         <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">

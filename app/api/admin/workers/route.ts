@@ -21,7 +21,7 @@ export async function getUserFromRequest(request: Request) {
 
     const decoded = verify(
       token,
-      process.env.JWT_SECRET || "fallback-secret"
+      process.env.JWT_SECRET ?? "fallback-secret"
     ) as { id: string };
 
     const user = await prisma.user.findUnique({
@@ -56,7 +56,7 @@ export async function getUserDetailsFromRequest(request: Request) {
 
     const decoded = verify(
       token,
-      process.env.JWT_SECRET || "fallback-secret"
+      process.env.JWT_SECRET ?? "fallback-secret"
     ) as { id: string };
 
     // Find the user first
@@ -93,7 +93,7 @@ export async function getCompleteUserProfile(request: Request) {
 
     const decoded = verify(
       token,
-      process.env.JWT_SECRET || "fallback-secret"
+      process.env.JWT_SECRET ?? "fallback-secret"
     ) as { id: string };
 
     const user = await prisma.user.findUnique({

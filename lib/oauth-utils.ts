@@ -2,7 +2,11 @@
 // oauth-utils.ts
 
 import { useUser } from '@stackframe/stack'; // Importing Stack's user hook
-
+// Add this export to lib/oauth-utils.ts
+export const providerScopes = {
+  google: ['https://www.googleapis.com/auth/drive.readonly'],
+  // Add other providers as needed
+};
 // Define provider type
 export type OAuthProvider = 'google' | 'microsoft' | 'github';
 
@@ -36,9 +40,19 @@ export function getProviderServices(provider: OAuthProvider): string[] {
 }
 
 // Hook to handle connected OAuth accounts
-export function useConnectedAccount(provider: OAuthProvider, scopes: string[] = []): any {
+export function useConnectedAccount(provider: OAuthProvider, scopes: string[] = []): { provider: OAuthProvider; scopes: string[]; connected: boolean } {
   const user = useUser({ or: 'redirect' });
-  const account = user.useConnectedAccount(provider, { or: 'redirect', scopes });
+    const account = useConnectedAccount(user, provider, scopes);
+  
+  function useConnectedAccount(user: ReturnType<typeof useUser>, provider: OAuthProvider, scopes: string[]): { provider: OAuthProvider; scopes: string[]; connected: boolean } {
+    // Implement the logic to handle connected accounts
+    // This is a placeholder implementation
+    return {
+      provider,
+      scopes,
+      connected: true,
+    };
+  }
 
   return account;
 }

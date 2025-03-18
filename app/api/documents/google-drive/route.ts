@@ -4,7 +4,7 @@ import { NextResponse } from "next/server"
 import { verifyAuthToken } from "@/lib/auth-server"
 import { stackServerApp } from "@/lib/stack-auth"
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     // Verify the user's token
     const verifiedUser = await verifyAuthToken()
@@ -14,10 +14,19 @@ export async function GET(request: Request) {
     }
 
     // Get the user from Stack Auth
-    const user = await stackServerApp.getUser(verifiedUser.id)
+    const user = await stackServerApp.getUser()
 
     // Get the connected Google account
-    const googleAccount = await user.getConnectedAccount("google")
+    interface Account {
+      provider: string;
+      getAccessToken: () => Promise<{ accessToken: string }>;
+    }
+
+    interface User {
+      accounts: Account[];
+    }
+
+    const googleAccount = (user as unknown as User)?.accounts?.find(account => account.provider === "google")
 
     if (!googleAccount) {
       return NextResponse.json(

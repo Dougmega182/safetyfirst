@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
 import { useUser } from "@stackframe/stack"
 import { getClientAuthenticatedNeonDb } from "@/lib/db/neon-rls"
 
-export function useAuthenticatedDb<T = any>(query: string, params: any[] = [], dependencies: any[] = []) {
+export function useAuthenticatedDb<T = unknown>(query: string, params: (string | number | boolean)[] = [], dependencies: unknown[] = []) {
   const user = useUser()
   const [data, setData] = useState<T | null>(null)
   const [loading, setLoading] = useState(true)
@@ -17,11 +17,11 @@ export function useAuthenticatedDb<T = any>(query: string, params: any[] = [], d
         setLoading(true)
 
         // Check if user exists and if user has the accessToken
-        if (!user || !user.getAuthJson) {
-          throw new Error("User or authJson is missing")
+        if (!user || !('getAccessToken' in user)) {
+          throw new Error("User or accessToken is missing")
         }
 
-        const { accessToken } = await user.getAuthJson()
+        const accessToken = await (user as { getAccessToken: () => Promise<string> }).getAccessToken()
 
         // Ensure accessToken is not null
         if (!accessToken) {
@@ -32,7 +32,7 @@ export function useAuthenticatedDb<T = any>(query: string, params: any[] = [], d
         const sql = getClientAuthenticatedNeonDb(accessToken)
 
         // Execute the query
-        const result = await sql(query, ...params)
+        const result = await sql(query, params)
 
         setData(result as T)
         setError(null)

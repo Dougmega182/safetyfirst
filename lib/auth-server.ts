@@ -6,6 +6,13 @@ const JWKS_CACHE_TTL = 60 * 60 * 1000 // 1 hour cache
 let jwksCache: ReturnType<typeof createRemoteJWKSet> | null = null
 let cacheTimestamp = 0
 
+interface JWTPayload {
+  sub: string
+  email?: string
+  name?: string
+  roles?: string[]
+}
+
 export interface VerifiedUser {
   id: string
   email?: string
@@ -34,18 +41,15 @@ export async function verifyAuthToken(): Promise<VerifiedUser | null> {
       cacheTimestamp = Date.now()
     }
 
-    const { payload } = await jwtVerify(token, jwksCache, {
-      issuer: "stack-auth",
-      audience: "api"
-    })
-
-    // Type assertion here to ensure payload has the correct type
+    const { payload } = await jwtVerify(token, jwksCache)
     return {
-      id: (payload as any).sub!,
-      email: (payload as any).email,
-      name: (payload as any).name,
-      roles: (payload as any).roles || []
+      id: (payload as JWTPayload).sub,
+      email: (payload as JWTPayload).email,
+      name: (payload as JWTPayload).name,
+      roles: (payload as JWTPayload).roles || []
     }
+    // Type assertion here to ensure payload has the correct type
+   
   } catch (error) {
     console.error("Auth verification failed:", error)
     return null

@@ -1,8 +1,17 @@
 // safetyfirst/lib/user-metadata.ts
-import { stackServerApp } from "@/lib/stack-auth";
-import { User, UserDetails, Role } from "@prisma/client";
+import { Role } from "@prisma/client";
 import prisma from "@/lib/prisma";
-import { CurrentUser } from "@stackframe/stack"; // Import the CurrentUser type
+import { CurrentUser, StackServerApp } from "@stackframe/stack"; // Import the CurrentUser type
+import { User } from "next-auth";
+
+const stackServerApp = new StackServerApp({
+  projectId: process.env.STACK_PROJECT_ID!,
+  tokenStore: "memory"
+});
+
+(async () => {
+  await stackServerApp.getUser();
+})();
 
 // Types for custom user metadata
 export interface UserClientMetadata {
@@ -36,6 +45,15 @@ export async function updateUserDetails(userId: string, data: {
   });
 }
 
+// Add these functions to lib/user-metadata.ts
+export async function updateUserServerMetadata(userId: string, metadata: Record<string, UserClientReadOnlyMetadata[keyof UserClientReadOnlyMetadata]>) {
+  // Use userId to update server metadata
+  await stackServerApp.setMetadata(userId, metadata);
+}
+
+export async function updateUserClientReadOnlyMetadata(userId: string, metadata: Partial<UserClientReadOnlyMetadata>) {
+  await stackServerApp.setUserMetadata(userId, metadata);
+}
 // Client-side function for updating user client metadata in Stack
 export async function updateUserClientMetadata(
   user: CurrentUser | null,

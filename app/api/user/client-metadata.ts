@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]";
 import { stackServerApp } from "@/lib/stack-auth";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "PUT") {
@@ -26,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Correct `getUser()` call
-    const stackUser = await stackServerApp.getUser({ id: userId });
+    const stackUser = await stackServerApp.getUser();
     if (!stackUser) {
       return res.status(404).json({ error: "User not found" });
     }

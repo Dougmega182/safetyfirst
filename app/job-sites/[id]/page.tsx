@@ -116,7 +116,7 @@ export default function JobSitePage() {
       } else {
         throw new Error("Failed to sign in")
       }
-    } catch (error) {
+    } catch {
       toast({
         variant: "destructive",
         title: "Error",
@@ -140,7 +140,7 @@ export default function JobSitePage() {
       } else {
         throw new Error("Failed to sign out")
       }
-    } catch (error) {
+    } catch {
       toast({
         variant: "destructive",
         title: "Error",

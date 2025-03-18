@@ -1,15 +1,15 @@
 // safetyfirst/app/api/auth/verify/route.ts
 // app/api/auth/verift/route.ts
 import { NextResponse } from "next/server"
-import * as jose from "jose"
+import { createRemoteJWKSet, jwtVerify } from "jose"
 
 // Cache the JWKS for performance
-let jwksCache: jose.RemoteJWKSet<jose.JWTVerifyGetKey> | null = null
+let jwksCache: ReturnType<typeof createRemoteJWKSet> | null = null
 
 async function getJwks() {
   if (!jwksCache) {
     const projectId = process.env.NEXT_PUBLIC_STACK_CLIENT_ID
-    jwksCache = jose.createRemoteJWKSet(
+    jwksCache = createRemoteJWKSet(
       new URL(`https://api.stack-auth.com/api/v1/projects/${projectId}/.well-known/jwks.json`),
     )
   }
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
 
     // Verify the JWT token
     const jwks = await getJwks()
-    const { payload } = await jose.jwtVerify(accessToken, jwks)
+    const { payload } = await jwtVerify(accessToken, jwks)
 
     // Return the verified user information
     return NextResponse.json({
