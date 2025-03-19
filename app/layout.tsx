@@ -25,7 +25,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={inter.className} style={{ fontFamily: "Inter, sans-serif" }}>
         <StackProvider app={stackServerApp}>
           <StackTheme>
             <ThemeProvider
