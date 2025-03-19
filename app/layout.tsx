@@ -1,4 +1,4 @@
-import { Inter } from "next/font/google";  // Move this to the top
+import { Inter } from "next/font/google";  
 import type React from "react";
 import type { Metadata } from "next";
 import { StackProvider, StackTheme } from "@stackframe/stack";
