@@ -56,29 +56,57 @@ export async function generateWeeklyReport() {
     })
 
     // Calculate statistics
-    const totalAttendances = jobSites.reduce((total, site) => total + site.attendances.length, 0)
+    const totalAttendances = jobSites.reduce(
+      (total: number, site: { attendances: { length: number }[] }) => total + site.attendances.reduce((sum, attendance) => sum + attendance.length, 0),
+      0
+    )
 
     const uniqueWorkers = new Set()
-    jobSites.forEach((site) => {
-      site.attendances.forEach((attendance) => {
+    interface Attendance {
+      userId: number
+      signInTime: Date
+      signOutTime?: Date
+    }
+
+    interface Induction {
+      completions: { completedAt: Date }[]
+    }
+
+    interface JobSite {
+      attendances: Attendance[]
+      name: string
+      inductions: Induction[]
+    }
+
+    interface JobSite {
+      attendances: Attendance[]
+      name: string
+      inductions: Induction[]
+      swms: {
+        signoffs: { signedAt: Date }[]
+      }[]
+    }
+
+    jobSites.forEach((site: JobSite) => {
+      site.attendances.forEach((attendance: Attendance) => {
         uniqueWorkers.add(attendance.userId)
       })
     })
 
     const totalInductionsCompleted = jobSites.reduce(
-      (total, site) =>
+      (total: number, site: { inductions: { completions: { completedAt: Date }[] }[] }) =>
         total + site.inductions.reduce((siteTotal, induction) => siteTotal + induction.completions.length, 0),
       0,
     )
 
     const totalSwmsSigned = jobSites.reduce(
-      (total, site) => total + site.swms.reduce((siteTotal, swms) => siteTotal + swms.signoffs.length, 0),
+      (total: number, site: { swms: { signoffs: { length: number }[] }[] }) => total + site.swms.reduce((siteTotal, swms) => siteTotal + swms.signoffs.length, 0),
       0,
     )
 
     // Calculate total hours worked
     let totalHoursWorked = 0
-    jobSites.forEach((site) => {
+    jobSites.forEach((site: JobSite) => {
       site.attendances.forEach((attendance) => {
         if (attendance.signOutTime) {
           const signInTime = new Date(attendance.signInTime).getTime()
@@ -90,7 +118,7 @@ export async function generateWeeklyReport() {
     })
 
     // Prepare site-specific data
-    const siteData = jobSites.map((site) => {
+    const siteData = jobSites.map((site: JobSite) => {
       const siteHours = site.attendances.reduce((total, attendance) => {
         if (!attendance.signOutTime) return total
 
@@ -119,7 +147,7 @@ export async function generateWeeklyReport() {
       uniqueWorkers: uniqueWorkers.size,
       totalHoursWorked,
       totalInductionsCompleted,
-      totalSwmsSigned,
+      totalSwmsSigned: Number(totalSwmsSigned),
       sites: siteData,
     }
 
@@ -128,8 +156,8 @@ export async function generateWeeklyReport() {
       data: {
         weekStarting: weekStart,
         weekEnding: weekEnd,
-        reportData: reportData as Prisma.JsonObject,
-        sentTo: [process.env.REPORT_EMAIL || "admin@example.com"],
+        reportData: reportData as Prisma.JsonValue,
+        sentTo: [process.env.REPORT_EMAIL ?? "admin@example.com"],
       },
     })
 

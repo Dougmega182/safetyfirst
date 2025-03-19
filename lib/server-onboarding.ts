@@ -31,23 +31,18 @@ export async function ensureOnboarded(currentPath: string) {
     }
 
     // Verify the token
-    const decoded = verify(sessionToken, process.env.STACK_SECRET_SERVER_KEY || "") as { sub: string }
+    verify(sessionToken, process.env.STACK_SECRET_SERVER_KEY ?? "")
 
     // Define the user type
-    interface CurrentUser {
+    interface User {
       id: string;
-      email: string;
-      name: string;
-    }
-
-    interface User extends CurrentUser {
       serverMetadata?: {
         onboardingCompleted?: boolean
       }
     }
 
     // Get the user
-    const user: User | null = await stackServerApp.getUser({ userId: decoded.sub })
+    const user: User | null = await stackServerApp.getUser()
 
     if (!user) {
     console.error("User not found")

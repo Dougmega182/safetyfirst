@@ -17,47 +17,71 @@ const __awaiter = (globalThis && globalThis.__awaiter) || function (thisArg, _ar
                 adopt(result.value).then(fulfilled, rejected);
             }
         }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
+        generator = generator.apply(thisArg, _arguments || []);
+        step(generator.next());
     });
 };
 const __generator = function () {
-    let _;
     let f;
     let y;
     let t;
     let g;
-    _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] };
     g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
-    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    g.next = verb(0);
+    g["throw"] = verb(1);
+    g["return"] = verb(2);
+    if (typeof Symbol === "function") {
+        g[Symbol.iterator] = function() { return this; };
+    }
+    return g;
     function verb(n) { return function (v) { return step([n, v]); }; }
+
+    function processYield(op) {
+        f = 1;
+        if (y) {
+            t = handleYield(op);
+            if (t) {
+                t = t.call(y, op[1]);
+                if (!t.done) return t;
+            }
+        }
+        y = 0;
+        if (t) op = [op[0] & 2, t.value];
+        return op;
+    }
+
+    function handleOperation(op) {
+        if (op[0]) {
+            if (op[0] & 1) throw op[1];
+            return { value: op[1], done: false };
+        }
+        return null;
+    }
 
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
         g = g && (g = 0);
-        if (op[0]) { _ = 0; }
-        while (_) {
-            try {
-                if (f) throw new TypeError("Generator is already executing.");
-                while (g && (g = 0, op[0] && (_ = 0)), _) {
-                    try {
-                        if (f = 1, y && (t = handleYield(op)) && !(t = t.call(y, op[1])).done) return t;
-                        if (y = 0, t) op = [op[0] & 2, t.value];
-                        if (op[0]) {
-                            if (op[0] & 1) throw op[1];
-                            return { value: op[1], done: false };
-                        }
-                    } catch (e) {
-                        op = [6, e];
-                        y = 0;
-                    } finally {
-                        f = t = 0;
-                    }
+        if (op[0]) { g = 0; }
+
+        try {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (true) {
+                try {
+                    op = processYield(op);
+                    const result = handleOperation(op);
+                    if (result) return result;
+                } catch (e) {
+                    op = [6, e];
+                    y = 0;
+                } finally {
+                    f = t = 0;
                 }
-            } catch {
-                if (op[0] & 5) throw op[1];
+                if (op[0] & 5) break;
             }
-            return { value: op[0] ? op[1] : void 0, done: true };
+        } catch {
+            if (op[0] & 5) throw op[1];
         }
+        return { value: op[0] ? op[1] : void 0, done: true };
     }
 
 

@@ -53,15 +53,15 @@ interface StackUser {
 }
 
 // Admin Dashboard Component
-const AdminDashboard = ({ icon: Icon, title }: { icon: LucideIcon, title: string }) => (
+const AdminDashboard = ({ icon: IconName, title }: { icon: LucideIcon, title: string }) => (
   <div>
     <h2 className="text-2xl font-bold mb-4">Admin Dashboard</h2>
     <div className="grid gap-6 md:grid-cols-2">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle>{title}</CardTitle>
-          <Icon className="h-4 w-4 text-muted-foreground" />
-          <Icon className="h-4 w-4 text-muted-foreground" />
+          <IconName className="h-4 w-4 text-muted-foreground" />
+          <IconName className="h-4 w-4 text-muted-foreground" />
           <CardTitle>User Management</CardTitle>
           <CardDescription>Manage users and permissions</CardDescription>
         </CardHeader>
@@ -87,11 +87,11 @@ const AdminDashboard = ({ icon: Icon, title }: { icon: LucideIcon, title: string
 );
 
 // Dashboard Stats Card Component
-const DashboardStat = ({ title, value, icon: Icon, description }: DashboardStatProps) => (
+const DashboardStat = ({ title, value, icon: IconName, description }: DashboardStatProps) => (
   <Card>
     <CardHeader className="flex flex-row items-center justify-between pb-2">
       <CardTitle className="text-sm font-medium">{title}</CardTitle>
-      <Icon className="h-4 w-4 text-muted-foreground" />
+      <IconName className="h-4 w-4 text-muted-foreground" />
     </CardHeader>
     <CardContent>
       <div className="text-2xl font-bold">{value}</div>
@@ -100,10 +100,11 @@ const DashboardStat = ({ title, value, icon: Icon, description }: DashboardStatP
   </Card>
 );
 // Quick Action Card Component
-const QuickAction = ({ title, description, link }: QuickActionProps) => (
+const QuickAction = ({ title, description, link, icon: IconComponent }: QuickActionProps) => (
   <Card>
-    <CardHeader>
+    <CardHeader className="flex flex-row items-center justify-between pb-2">
       <CardTitle>{title}</CardTitle>
+      <IconComponent className="h-4 w-4 text-muted-foreground" />
       <CardDescription>{description}</CardDescription>
     </CardHeader>
     <CardContent>
@@ -195,18 +196,18 @@ export default function DashboardPage() {
   const clientReadOnlyMetadata = stackUser?.clientReadOnlyMetadata || {};
 
   // Determine user role
-  const userRole = clientReadOnlyMetadata?.role || user?.role || "USER";
+  const userRole = (clientReadOnlyMetadata?.role ?? user?.role) || "USER";
   const isAdmin = ["ADMIN", "CEO"].includes(userRole?.toUpperCase() || "");
 
   // Get job title and company name
-  const jobTitle = clientReadOnlyMetadata?.jobTitle || "No Title";
-  const companyName = clientReadOnlyMetadata?.companyName || "No Company";
+  const jobTitle = clientReadOnlyMetadata?.jobTitle ?? "No Title";
+  const companyName = clientReadOnlyMetadata?.companyName ?? "No Company";
 
   return (
     <div className="container py-10">
       <h1 className="mb-2 text-3xl font-bold">Dashboard</h1>
       <p className="mb-8 text-muted-foreground">
-        Welcome back, {stackUser?.displayName || user.name}!
+        Welcome back, {stackUser?.displayName ?? user.name}!
         {jobTitle !== "No Title" && (
           <span className="ml-2 text-sm">
             ({jobTitle} at {companyName})

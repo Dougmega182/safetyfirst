@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } = req.body;
 
     // Get the user from Stack
-    const user = await stackServerApp.getUserById(userId);
+    const user = await stackServerApp.user.get(userId);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }

@@ -89,17 +89,17 @@ export async function GET(request: Request) {
     })
 
     // Transform data for the frontend
-    const sites = jobSites.map((site) => {
+    const sites = jobSites.map((site: typeof jobSites[0]) => {
       // Count unique users who have attended this site
-      const uniqueUsers = new Set(site.attendances.map((a) => a.userId))
+      const uniqueUsers = new Set(site.attendances.map((a: { userId: string }) => a.userId))
 
       // Count total inductions and completed inductions
       const totalInductions = site.inductions.length * allUsers
-      const completedInductions = site.inductions.reduce((total, induction) => total + induction.completions.length, 0)
+      const completedInductions = site.inductions.reduce((total: number, induction: { completions: { id: string }[] }) => total + induction.completions.length, 0)
 
       // Count total SWMS and signed SWMS
       const totalSwms = site.swms.length * allUsers
-      const signedSwms = site.swms.reduce((total, swms) => total + swms.signoffs.length, 0)
+      const signedSwms = site.swms.reduce((total: number, swms: { signoffs: { id: string }[] }) => total + swms.signoffs.length, 0)
 
       return {
         id: site.id,

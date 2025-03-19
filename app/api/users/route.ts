@@ -11,9 +11,7 @@ export async function GET() {
     // Only return non-sensitive information
     const safeUsers = users.map((user) => ({
       id: user.id,
-      displayName: user.displayName,
-      email: user.email,
-      createdAt: user.createdAt,
+      displayName: user.displayName
     }))
 
     return NextResponse.json({ users: safeUsers })

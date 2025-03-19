@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     }
 
     // Verify the token
-    const decoded = verify(sessionToken, process.env.STACK_SECRET_SERVER_KEY || "") as { sub: string }
+    const decoded = verify(sessionToken, process.env.STACK_SECRET_SERVER_KEY ?? "") as { sub: string }
     const userId = decoded.sub
 
     // Get the request body

@@ -23,11 +23,10 @@ export async function GET() {
     // Return the user profile with sensitive information removed
     return NextResponse.json({
       id: user.id,
-      emailAddress: user.email,
+      emailAddress: user.emailAddress,
       displayName: user.displayName,
-      avatar: user.avatar,
       clientMetadata: user.clientMetadata,
-      clientReadOnlyMetadata: user.readOnlyMetadata,
+      clientReadOnlyMetadata: user.clientReadOnlyMetadata,
       // Don't include serverMetadata for security
     })
   } catch (error) {

@@ -10,12 +10,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const session = await getServerAuthSession({ req, res });
-  if (!session || !session.user) {
+  if (!session?.user) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
   try {
-    const { safetyTraining, jobTitle, company } = req.body;
+    const { jobTitle, company } = req.body;
     
     // Update user details in Prisma
     await prisma.userDetails.update({

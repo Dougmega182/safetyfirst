@@ -1,9 +1,7 @@
 // safetyfirst/components/signature-canvas.tsx
 "use client"
 
-import type React from "react"
-
-import { useRef, useState, useEffect } from "react"
+import React, { useRef, useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Eraser, Save } from "lucide-react"
 
@@ -11,7 +9,7 @@ interface SignatureCanvasProps {
   onSave: (signature: string | null) => void
 }
 
-export default function SignatureCanvas({ onSave }: Readonly<SignatureCanvasProps>) {
+export default function SignatureCanvas({ onSave }: Readonly<SignatureCanvasProps>): React.ReactElement {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isDrawing, setIsDrawing] = useState(false)
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null)

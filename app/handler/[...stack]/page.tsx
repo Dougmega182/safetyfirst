@@ -9,5 +9,5 @@ export default function Handler({
   readonly params?: { readonly stack?: string[] };
   readonly searchParams?: Record<string, string>;
 }) {
-  return <StackHandler app={stackServerApp} params={params} searchParams={searchParams} />;
+  return <StackHandler app={stackServerApp} params={params} searchParams={searchParams} fullPage={true} />;
 }

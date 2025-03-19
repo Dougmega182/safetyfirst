@@ -18,7 +18,7 @@ import Link from "next/link"
 import dynamic from "next/dynamic"
 
 // Import SignatureCanvas dynamically with no SSR to avoid hydration issues
-const SignatureCanvas = dynamic(() => import("@/components/signature-canvas"), { ssr: false })
+const SignatureCanvas = dynamic(() => import('@/components/signature-canvas'), { ssr: false })
 
 export default function NewSwmsPage() {
   const { user, loading } = useAuth()

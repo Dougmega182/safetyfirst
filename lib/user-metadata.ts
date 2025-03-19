@@ -1,8 +1,11 @@
 // safetyfirst/lib/user-metadata.ts
-import { Role } from "@prisma/client";
+export enum Role {
+  USER = "USER",
+  ADMIN = "ADMIN",
+  // add more roles as needed
+}
 import prisma from "@/lib/prisma";
 import { CurrentUser, StackServerApp } from "@stackframe/stack"; // Import the CurrentUser type
-import { User } from "next-auth";
 
 const stackServerApp = new StackServerApp({
   projectId: process.env.STACK_PROJECT_ID!,
@@ -47,12 +50,16 @@ export async function updateUserDetails(userId: string, data: {
 
 // Add these functions to lib/user-metadata.ts
 export async function updateUserServerMetadata(userId: string, metadata: Record<string, UserClientReadOnlyMetadata[keyof UserClientReadOnlyMetadata]>) {
-  // Use userId to update server metadata
-  await stackServerApp.setMetadata(userId, metadata);
+  const user = await stackServerApp.getUser(userId);
+  if (!user) throw new Error("User not found");
+  await user.setServerMetadata(metadata);
 }
 
 export async function updateUserClientReadOnlyMetadata(userId: string, metadata: Partial<UserClientReadOnlyMetadata>) {
-  await stackServerApp.setUserMetadata(userId, metadata);
+  const user = await stackServerApp.getUser(userId);
+  if (!user) throw new Error("User not found");
+  // Wrap the metadata to differentiate the implementation
+  await user.setServerMetadata({ clientReadOnlyMetadata: metadata });
 }
 // Client-side function for updating user client metadata in Stack
 export async function updateUserClientMetadata(
@@ -96,14 +103,14 @@ export async function initializeUserProfile(
   const userDetails = await prisma.userDetails.upsert({
     where: { userId },
     update: {
-      role: userData.role || Role.USER,
+      role: userData.role ?? Role.USER,
       company: userData.company,
       position: userData.position,
       phone: userData.phone,
     },
     create: {
       userId,
-      role: userData.role || Role.USER,
+      role: userData.role ?? Role.USER,
       company: userData.company,
       position: userData.position,
       phone: userData.phone,
@@ -128,7 +135,7 @@ export async function initializeUserProfile(
         lastActiveAt: new Date().toISOString(),
       },
       clientReadOnlyMetadata: clientReadOnlyMetadata || {
-        role: userData.role || Role.USER,
+        role: userData.role ?? Role.USER,
         accountStatus: "pending",
         companyName: userData.company,
         jobTitle: userData.position,

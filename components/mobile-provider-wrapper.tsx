@@ -6,7 +6,7 @@ import type React from "react"
 
 // Import MobileProvider dynamically with no SSR
 const MobileProviderComponent = dynamic<{ children: React.ReactNode }>(
-  () => import("../components/mobile-provider").then((mod) => mod.MobileProvider),
+  () => Promise.resolve({ MobileProvider }).then((mod) => mod.MobileProvider),
   { ssr: false },
 )
 

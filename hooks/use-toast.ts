@@ -34,23 +34,21 @@ function genId() {
   return count.toString()
 }
 
-type ActionType = ActionTypes
-
 type Action =
   | {
       type: "ADD_TOAST"
       toast: ToasterToast
     }
   | {
-      type: ActionType["UPDATE_TOAST"]
+      type: ActionTypes["UPDATE_TOAST"]
       toast: Partial<ToasterToast>
     }
   | {
-      type: ActionType["DISMISS_TOAST"]
+      type: ActionTypes["DISMISS_TOAST"]
       toastId?: ToasterToast["id"]
     }
   | {
-      type: ActionType["REMOVE_TOAST"]
+      type: ActionTypes["REMOVE_TOAST"]
       toastId?: ToasterToast["id"]
     }
 

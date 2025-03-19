@@ -2,7 +2,6 @@
 // /app/api/user/metadata.ts
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getServerAuthSession } from '@/lib/auth';
-import prisma from '@/lib/prisma';
 import { stackServerApp } from '@/lib/stack-auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -13,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // Verify the user is authenticated
   const session = await getServerAuthSession({ req, res });
-  if (!session || !session.user) {
+  if (!session?.user) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
@@ -26,7 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Get the user from Stack
-    const user = await stackServerApp.getUserById(userId);
+    const user = await stackServerApp.users.get(userId);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }

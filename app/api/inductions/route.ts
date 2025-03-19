@@ -87,7 +87,7 @@ export async function fetchUserFromRequest(request: Request): Promise<{ id: stri
       displayName: user.displayName,
       email: user.email,
       authMethod: user.authMethod,
-      role: user.role || null, // Ensure role is included
+      role: user.role ?? null, // Ensure role is included
     };
   }
   return null;

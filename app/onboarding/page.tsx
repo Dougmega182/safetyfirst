@@ -26,9 +26,9 @@ export default function OnboardingPage() {
   const typedUser = user as UserWithReadOnlyMetadata | null;
   
   const [formData, setFormData] = useState({
-    jobTitle: typedUser?.clientReadOnlyMetadata?.jobTitle || "",
-    company: typedUser?.clientReadOnlyMetadata?.companyName || "",
-    preferredJobSite: typedUser?.clientMetadata?.preferredJobSite || "",
+    jobTitle: typedUser?.clientReadOnlyMetadata?.jobTitle ?? "",
+    company: typedUser?.clientReadOnlyMetadata?.companyName ?? "",
+    preferredJobSite: typedUser?.clientMetadata?.preferredJobSite ?? "",
     notifications: {
       email: (user?.clientMetadata as { notificationPreferences?: { email?: boolean } })?.notificationPreferences?.email !== false,
       sms: (user?.clientMetadata as { notificationPreferences?: { sms?: boolean } })?.notificationPreferences?.sms === true,
