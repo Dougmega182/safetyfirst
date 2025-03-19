@@ -1,19 +1,20 @@
-import { Inter } from "next/font/google";  
+ 
 import type React from "react";
 import type { Metadata } from "next";
 import { StackProvider, StackTheme } from "@stackframe/stack";
-import { stackServerApp } from "../stack";
+import { stackServerApp } from "../stack.jsx";
 import '@/styles/globals.css';
-import { ThemeProvider } from "@/components/theme-provider";
-import { AuthProvider } from "@/lib/auth-provider";
-import { Toaster } from "@/components/ui/toaster";
-import { SidebarNav } from "@/components/sidebar";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { MobileProviderWrapper } from "@/components/mobile-provider-wrapper";
-import { Header } from "@/components/header";
+import { ThemeProvider } from "../components/theme-provider.jsx";
+import { AuthProvider } from "@/lib/auth-provider.jsx";
+import { Toaster } from "@/components/ui/toaster.jsx";
+import { SidebarNav } from "@/components/sidebar.jsx";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar.jsx";
+import { MobileProviderWrapper } from "@/components/mobile-provider-wrapper.jsx";
+import { Header } from "@/components/header.jsx";
+import { Inter } from 'next/font/google';
 
-// ✅ Disable font preloading
-const inter = Inter({ subsets: ["latin"], preload: false, display: "swap" });
+const inter = Inter({ subsets: ['latin'] });
+
 
 export const metadata: Metadata = {
   title: "Construction Safety Platform",
