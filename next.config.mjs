@@ -1,24 +1,21 @@
 // next.config.mjs
-let userConfig = {}
+let userConfig = {};
 
 try {
-  // First try with .js extension
   try {
-    const imported = await import('./v0-user-next.config.js')
-    userConfig = imported.default || imported
+    const imported = await import('./v0-user-next.config.js');
+    userConfig = imported.default || imported;
   } catch (jsError) {
-    // If that fails, try without extension (letting Node.js resolve)
     try {
-      const imported = await import('./v0-user-next.config')
-      userConfig = imported.default || imported
+      const imported = await import('./v0-user-next.config');
+      userConfig = imported.default || imported;
     } catch (noExtError) {
-      // If both fail, initialize as empty object
-      userConfig = {}
+      userConfig = {};
     }
   }
 } catch (e) {
-  console.warn('User config import failed:', e.message)
-  userConfig = {}
+  console.warn('User config import failed:', e.message);
+  userConfig = {};
 }
 
 /** @type {import('next').NextConfig} */
@@ -38,17 +35,17 @@ const nextConfig = {
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
-    optimizeFonts: false
+    // ❌ Remove optimizeFonts since it's no longer valid
   },
-}
+};
 
 // Merge the configs properly
 function mergeConfig(baseConfig, userConfig) {
   if (!userConfig || Object.keys(userConfig).length === 0) {
-    return baseConfig
+    return baseConfig;
   }
 
-  const mergedConfig = { ...baseConfig }
+  const mergedConfig = { ...baseConfig };
 
   for (const key in userConfig) {
     if (
@@ -59,14 +56,13 @@ function mergeConfig(baseConfig, userConfig) {
       mergedConfig[key] = {
         ...baseConfig[key],
         ...userConfig[key],
-      }
+      };
     } else {
-      mergedConfig[key] = userConfig[key]
+      mergedConfig[key] = userConfig[key];
     }
   }
 
-  return mergedConfig
+  return mergedConfig;
 }
 
-// Use the merged config for the export
-export default mergeConfig(nextConfig, userConfig)
+export default mergeConfig(nextConfig, userConfig);

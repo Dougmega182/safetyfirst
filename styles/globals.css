@@ -5,13 +5,13 @@
 /* Your custom CSS here */
 
 @font-face {
-    font-family: 'YourFont';
-    src: url('/_next/static/media/a34f9d1faa5f3315-s.p.woff2') format('woff2');
-    font-display: swap; /* or optional, fallback, block */
-  }
-  @font-face {
-    font-family: 'Inter';
-    src: url('/fonts/Inter.woff2') format('woff2');
-    font-display: swap;
-  }
-  
+  font-family: 'YourFont';
+  src: url('/fonts/YourFont.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter.woff2') format('woff2');
+  font-display: swap;
+}
