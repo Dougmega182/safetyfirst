@@ -34,9 +34,10 @@ const nextConfig = {
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
+    optimizeCss: true, // ✅ Improves CSS handling
+    fontLoaders: [], // ✅ Prevents automatic font optimization
   },
 };
-
 
 // Merge the configs properly
 function mergeConfig(baseConfig, userConfig) {

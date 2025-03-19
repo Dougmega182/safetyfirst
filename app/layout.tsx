@@ -12,7 +12,8 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { MobileProviderWrapper } from "@/components/mobile-provider-wrapper";
 import { Header } from "@/components/header";
 
-const inter = Inter({ subsets: ["latin"], display: 'optional', });
+// ✅ Disable font preloading
+const inter = Inter({ subsets: ["latin"], preload: false, display: "swap" });
 
 export const metadata: Metadata = {
   title: "Construction Safety Platform",
@@ -20,20 +21,13 @@ export const metadata: Metadata = {
 };
 
 export const dynamic = 'force-dynamic';
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className} style={{ fontFamily: "Inter, sans-serif" }}>
         <StackProvider app={stackServerApp}>
           <StackTheme>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="light"
-              enableSystem
-              disableTransitionOnChange
-            >
+            <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
               <AuthProvider>
                 <SidebarProvider>
                   <MobileProviderWrapper>
