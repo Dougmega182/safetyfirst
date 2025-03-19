@@ -2,16 +2,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-
-
-
 // STACK AUTH API DETAILS
 const STACK_AUTH_URL = process.env.STACK_AUTH_URL;
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("auth-token")?.value;
   const { pathname } = request.nextUrl;
-  const res.headers.delete('Link');
+
   // Allow public routes
   const publicPaths = ["/", "/auth/login", "/auth/register", "/auth/forgot-password"];
   if (publicPaths.includes(pathname)) return NextResponse.next();
@@ -40,4 +37,3 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 }
-
