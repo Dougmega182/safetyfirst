@@ -4,9 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "postinstall": "prisma generate",
-    "dev": "next dev",
-    "build": "next build",
+      "dev": "next dev",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "setup-db": "ts-node --transpile-only scripts/setup-db.ts",

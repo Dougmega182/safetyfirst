@@ -2,15 +2,15 @@
 import type React from "react";
 import type { Metadata } from "next";
 import { StackProvider, StackTheme } from "@stackframe/stack";
-import { stackServerApp } from "../stack.jsx";
+import { stackServerApp } from "../stack";
 import '@/styles/globals.css';
-import { ThemeProvider } from "../components/theme-provider.jsx";
-import { AuthProvider } from "@/lib/auth-provider.jsx";
-import { Toaster } from "@/components/ui/toaster.jsx";
-import { SidebarNav } from "@/components/sidebar.jsx";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar.jsx";
-import { MobileProviderWrapper } from "@/components/mobile-provider-wrapper.jsx";
-import { Header } from "@/components/header.jsx";
+import { ThemeProvider } from "../components/theme-provider";
+import { AuthProvider } from "@/lib/auth-provider";
+import { Toaster } from "@/components/ui/toaster";
+import { SidebarNav } from "@/components/sidebar";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { MobileProviderWrapper } from "@/components/mobile-provider-wrapper";
+import { Header } from "@/components/header";
 import { Inter } from 'next/font/google';
 
 const inter = Inter({ subsets: ['latin'] });
