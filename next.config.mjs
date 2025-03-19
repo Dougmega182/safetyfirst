@@ -31,11 +31,10 @@ const nextConfig = {
     unoptimized: true,
   },
   experimental: {
-    serverActions: true,
+    serverActions: {}, // ✅ Fix: Change `true` to an object
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
-    // ❌ Remove optimizeFonts since it's no longer valid
   },
 };
 
