@@ -19,6 +19,7 @@ export const metadata: Metadata = {
   description: "Site safety management platform",
 };
 
+export const dynamic = 'force-dynamic';
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {

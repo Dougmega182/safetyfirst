@@ -14,6 +14,10 @@ interface JobSite {
   active_workers: string
 }
 
+export const dynamic = 'force-dynamic';
+
+// Your existing route handler
+
 export async function GET(request: Request) {
   try {
     // Verify the user's token

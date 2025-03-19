@@ -1,13 +1,12 @@
 // safetyfirst/next.config.mjs
-let userConfig = undefined
 try {
-  userConfig = await import('./v0-user-next.config')
+  let userConfig = await import('./v0-user-next.config')
   // If the import returns a default export, extract it
   if (userConfig.default) {
     userConfig = userConfig.default
   }
 } catch (e) {
-  // ignore error
+  console.error('Error occurred while importing user config:', e);
 }
 
 /** @type {import('next').NextConfig} */

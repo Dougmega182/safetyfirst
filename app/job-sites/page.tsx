@@ -14,6 +14,11 @@ interface JobSite {
   active_workers?: number;
 }
 
+export const dynamic = 'force-dynamic';
+
+// Your existing route handler
+
+
 export default async function JobSitesPage() {
   // Fetch job sites using the authenticated database connection
   const jobSites = (await getUserJobSites()) as JobSite[]
