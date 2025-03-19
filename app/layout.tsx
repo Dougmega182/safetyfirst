@@ -12,7 +12,7 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { MobileProviderWrapper } from "@/components/mobile-provider-wrapper";
 import { Header } from "@/components/header";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], display: 'optional', });
 
 export const metadata: Metadata = {
   title: "Construction Safety Platform",
