@@ -31,11 +31,7 @@ const nextConfig = {
     unoptimized: true,
   },
   experimental: {
-    webpackBuildWorker: true,
-    parallelServerBuildTraces: true,
-    parallelServerCompiles: true,
-    optimizeCss: true, // ✅ Improves CSS handling
-    fontLoaders: [], // ✅ Prevents automatic font optimization
+    optimizeCss: true, // ✅ Keeps CSS handling optimized
   },
 };
 
