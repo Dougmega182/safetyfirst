@@ -1,16 +1,29 @@
-// safetyfirst/next.config.mjs
+// next.config.mjs
+let userConfig = {}
+
 try {
-  let userConfig = await import('./v0-user-next.config')
-  // If the import returns a default export, extract it
-  if (userConfig.default) {
-    userConfig = userConfig.default
+  // First try with .js extension
+  try {
+    const imported = await import('./v0-user-next.config.js')
+    userConfig = imported.default || imported
+  } catch (jsError) {
+    // If that fails, try without extension (letting Node.js resolve)
+    try {
+      const imported = await import('./v0-user-next.config')
+      userConfig = imported.default || imported
+    } catch (noExtError) {
+      // If both fail, initialize as empty object
+      userConfig = {}
+    }
   }
 } catch (e) {
-  console.error('Error occurred while importing user config:', e);
+  console.warn('User config import failed:', e.message)
+  userConfig = {}
 }
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -21,6 +34,7 @@ const nextConfig = {
     unoptimized: true,
   },
   experimental: {
+    serverActions: true,
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
@@ -29,7 +43,7 @@ const nextConfig = {
 
 // Merge the configs properly
 function mergeConfig(baseConfig, userConfig) {
-  if (!userConfig) {
+  if (!userConfig || Object.keys(userConfig).length === 0) {
     return baseConfig
   }
 
