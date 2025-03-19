@@ -31,12 +31,12 @@ const nextConfig = {
     unoptimized: true,
   },
   experimental: {
-    serverActions: {}, // ✅ Fix: Change `true` to an object
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
   },
 };
+
 
 // Merge the configs properly
 function mergeConfig(baseConfig, userConfig) {
