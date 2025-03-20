@@ -1,5 +1,5 @@
 import globals from "globals";
-import pluginJs from "@eslint/js";
+import jsPlugin from "@eslint/js";
 import tseslint from "typescript-eslint";
 import nextPlugin from "@next/eslint-plugin-next";
 
@@ -8,16 +8,16 @@ export default [
   {
     files: ["**/*.{js,mjs,cjs,ts,tsx}"],
     languageOptions: {
-      globals: {
-        ...globals.browser,
-        ...globals.node
-      },
       parser: tseslint.parser,
       parserOptions: {
         ecmaVersion: "latest",
         sourceType: "module",
         project: "./tsconfig.json"
       },
+      globals: {
+        ...globals.browser,
+        ...globals.node
+      }
     },
     plugins: {
       "@typescript-eslint": tseslint.plugin,
@@ -26,10 +26,10 @@ export default [
     rules: {
       ...tseslint.configs.recommended.rules,
       ...nextPlugin.configs.recommended.rules,
-      "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
-      // Add any other custom rules here
-    }
+      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }]
+    },
+    ignorePatterns: ["next.config.js", "v0-user-next.config.js"] // Ignore Next.js config files
   },
-  pluginJs.configs.recommended,
-  ...tseslint.configs.recommended,
+  jsPlugin.configs.recommended,
+  ...tseslint.configs.recommended
 ];
