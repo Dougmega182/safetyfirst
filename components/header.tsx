@@ -5,11 +5,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { HardHat, Menu } from "lucide-react";
-import { Button } from "@/components/ui/button.jsx";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet.jsx";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { UserButton } from "@stackframe/stack";
 import { useAuth } from "@/lib/use-auth";
-import Sidebar from "./sidebar.jsx";
+import Sidebar from "./sidebar";
 
 export function Header() {
   const pathname = usePathname();
