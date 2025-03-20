@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { StackProvider, StackTheme } from "@stackframe/stack";
 import { stackServerApp } from "../../stack.jsx";
 import '@/styles/globals.css';
-import { ThemeProvider } from "../components/theme-provider";
+import { ThemeProvider } from "../components/theme-provider.jsx";
 import { AuthProvider } from "@/lib/auth-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { SidebarNav } from "@/components/sidebar";
